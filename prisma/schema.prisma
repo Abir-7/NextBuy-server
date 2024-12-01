@@ -1,0 +1,57 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+
+// Auth Releted Model
+model User {
+  userId String @id @default(uuid())@unique
+  email String @unique
+  password String
+  role USER_ROLE @default(CUSTOMER)
+  isDeleted Boolean @default(false)
+  isBlocked Boolean @default(false)
+  verificationToken String @default("token will add letter")
+  isVerified Boolean @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  customer Customer?
+  @@map("user")
+}
+
+model Customer {
+  customerId String @id @default(uuid()) @unique
+  email String @db.VarChar(50) @unique 
+  name String @db.VarChar(50)
+  address String
+  mobile Int
+  gender USER_GENDER?
+  userId String @unique
+  user User @relation(fields: [userId],references: [userId])
+  @@map("customer")
+}
+
+
+//Product Releted Model
+
+//All ENUM Model
+enum USER_GENDER {
+  MALE
+  FEMALE
+}
+enum USER_ROLE {
+  CUSTOMER
+  ADMIN
+  VENDOR
+}
