@@ -32,8 +32,9 @@ model User {
 
 model Customer {
   customerId String @id @default(uuid()) @unique
-  email String @db.VarChar(50) @unique 
+  email String @unique 
   name String @db.VarChar(50)
+  image String?
   address String
   mobile Int
   gender USER_GENDER?
