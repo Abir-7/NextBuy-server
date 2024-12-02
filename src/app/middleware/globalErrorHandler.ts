@@ -6,9 +6,10 @@ const errorHandler = (
   res: Response,
   next: NextFunction
 ) => {
-  const statusCode = 500;
-  const message = "Something Went Wrong";
-  res.status(statusCode).send({
+  const statusCode = 400;
+  const message = err?.message || "Something Went Wrong";
+  console.log(err.message, "global error");
+  res.status(statusCode).json({
     success: false,
     statusCode,
     message,

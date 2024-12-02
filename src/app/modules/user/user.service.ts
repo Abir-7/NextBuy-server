@@ -28,8 +28,8 @@ const createUser = async (data: ICreateUser) => {
         userId: user.userId,
       },
     });
-    const result = await prisma.user.findUnique({
-      where: { userId: user.userId },
+    const result = await prisma.customer.findUnique({
+      where: { email: user.email },
     });
     return result;
   });
