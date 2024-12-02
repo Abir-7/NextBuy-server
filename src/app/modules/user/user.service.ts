@@ -4,7 +4,7 @@ import { config } from "../../config";
 const createUser = async (data: ICreateUser) => {
   console.log(data);
 
-  const { address, email, password, mobile, name } = data;
+  const { address, email, password, mobile, name, accountType } = data;
 
   const hashedPass = await bcrypt.hash(
     password,
@@ -16,18 +16,34 @@ const createUser = async (data: ICreateUser) => {
       data: {
         email: email,
         password: hashedPass,
+        role: accountType,
       },
     });
 
-    await prisma.customer.create({
-      data: {
-        email: user.email,
-        name,
-        mobile: Number(mobile),
-        address,
-        userId: user.userId,
-      },
-    });
+    if (accountType === "CUSTOMER") {
+      await prisma.customer.create({
+        data: {
+          email: user.email,
+          name,
+          mobile: Number(mobile),
+          address,
+          userId: user.userId,
+        },
+      });
+    }
+
+    if (accountType === "VENDOR") {
+      await prisma.vendor.create({
+        data: {
+          email: user.email,
+          name,
+          mobile: Number(mobile),
+          address,
+          userId: user.userId,
+        },
+      });
+    }
+
     const result = await prisma.customer.findUnique({
       where: { email: user.email },
     });

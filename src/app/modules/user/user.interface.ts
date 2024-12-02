@@ -4,4 +4,5 @@ interface ICreateUser {
   address: string;
   mobile: number;
   password: string;
+  accountType: "CUSTOMER" | "VENDOR";
 }

@@ -27,6 +27,7 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   customer Customer?
+  vendor Vendor?
   @@map("user")
 }
 
@@ -41,6 +42,19 @@ model Customer {
   userId String @unique
   user User @relation(fields: [userId],references: [userId])
   @@map("customer")
+}
+
+model Vendor {
+  vendorId String @id @default(uuid()) @unique
+  email String @unique 
+  name String @db.VarChar(50)
+  image String?
+  address String
+  mobile Int
+  gender USER_GENDER?
+  userId String @unique
+  user User @relation(fields: [userId],references: [userId])
+  @@map("vendor")
 }
 
 
