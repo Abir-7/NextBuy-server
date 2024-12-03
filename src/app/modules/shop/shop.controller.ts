@@ -3,7 +3,7 @@ import catchAsync from "../../utils/tryCatch";
 import { ShopService } from "./shop.service";
 
 const createShop = catchAsync(async (req, res) => {
-  const result = await ShopService.createShop(req.body);
+  const result = await ShopService.createShop(req.body, req.user);
 
   sendResponse(res, {
     success: true,

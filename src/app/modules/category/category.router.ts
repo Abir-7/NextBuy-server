@@ -5,7 +5,7 @@ import { auth } from "../../middleware/auth/auth";
 const router = Router();
 router.post(
   "/create-category",
-  auth("CUSTOMER"),
+  auth("ADMIN"),
   CategoryController.createCategory
 );
 export const CategoryRouter = router;
