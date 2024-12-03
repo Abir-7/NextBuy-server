@@ -54,19 +54,71 @@ model Vendor {
   gender USER_GENDER?
   userId String @unique
   user User @relation(fields: [userId],references: [userId])
+  shop     Shop[]
   @@map("vendor")
 }
 
 
-//Product Releted Model
+// Shop & Product Releted Model
+
+model Shop {
+  shopId        String    @id  @default(uuid()) 
+  name      String    @db.VarChar(50)
+  location  String   
+  vendorId  String    
+  vendor    Vendor   @relation(fields: [vendorId], references: [vendorId])
+   products  Product[]
+  createdAt DateTime  @default(now()) 
+  updatedAt DateTime  @updatedAt    
+  @@map("shop")  
+}
+
+
+
+model Product {
+  productId         String   @id @default(uuid()) 
+  name              String    @db.VarChar(50)
+  price             Float    
+  categoryId          String   
+  category Category @relation(fields: [categoryId], references: [categoryId])
+  images            String[] 
+  description       String?  
+  stock             Int      
+  sizes              Size[]  
+  shopId            String  
+  shop              Shop     @relation(fields: [shopId], references: [shopId])
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt 
+  @@map("product")
+}
+
+model Category {
+  categoryId         String   @id @default(uuid()) 
+  name              String    @db.VarChar(50) @unique
+  product Product[]
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt 
+  @@map("category")
+}
+
 
 //All ENUM Model
 enum USER_GENDER {
   MALE
   FEMALE
 }
+
 enum USER_ROLE {
   CUSTOMER
   ADMIN
   VENDOR
+}
+
+// ENUM for Product
+enum Size {
+  S
+  M
+  L
+  XL
+  XXL
 }

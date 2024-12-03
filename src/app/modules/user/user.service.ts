@@ -1,6 +1,7 @@
 import prisma from "../../client/prisma";
 import bcrypt from "bcrypt";
 import { config } from "../../config";
+import { tokenGenerator } from "../../utils/jsonTokenGenerator";
 const createUser = async (data: ICreateUser) => {
   console.log(data);
 
@@ -44,10 +45,11 @@ const createUser = async (data: ICreateUser) => {
       });
     }
 
-    const result = await prisma.customer.findUnique({
+    await prisma.user.findUnique({
       where: { email: user.email },
     });
-    return result;
+    const token = tokenGenerator({ userEmail: user.email, role: user.role });
+    return token;
   });
 
   return result;
