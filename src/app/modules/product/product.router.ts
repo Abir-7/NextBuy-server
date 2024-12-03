@@ -5,6 +5,7 @@ import { ProductController } from "./product.controller";
 
 const router = Router();
 router.post("/add-product", auth("VENDOR"), ProductController.addProduct);
+router.patch("/:id", auth("VENDOR"), ProductController.updateProduct);
 
 // router.get("/", auth("VENDOR"), ShopController.getVendorShop);
 export const ProductRouter = router;

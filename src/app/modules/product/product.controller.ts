@@ -1,10 +1,11 @@
+import { JwtPayload } from "jsonwebtoken";
 import sendResponse from "../../utils/sendResponse";
 import catchAsync from "../../utils/tryCatch";
 import { ProductService } from "./product.service";
 
 const addProduct = catchAsync(async (req, res) => {
   const result = await ProductService.addProduct(req.body);
-  console.log(result, "gggg");
+
   sendResponse(res, {
     success: true,
     statusCode: 200,
@@ -13,18 +14,20 @@ const addProduct = catchAsync(async (req, res) => {
   });
 });
 
-// const getVendorShop = catchAsync(async (req, res) => {
-//   const result = await ShopService.getVendorShop(req.user);
-//   console.log("object");
-//   sendResponse(res, {
-//     success: true,
-//     statusCode: 200,
-//     message: "Shop is fetched Successfully",
-//     data: result,
-//   });
-// });
+const updateProduct = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  const user = req.user as JwtPayload & { userEmail: string; role: string };
+  const result = await ProductService.updateProduct(req.body, id, user);
+
+  sendResponse(res, {
+    success: true,
+    statusCode: 200,
+    message: "Product updated Successfully",
+    data: result,
+  });
+});
 
 export const ProductController = {
   addProduct,
-  //getVendorShop,
+  updateProduct,
 };

@@ -1,7 +1,7 @@
 import { JwtPayload } from "jsonwebtoken";
 import prisma from "../../client/prisma";
 import { AppError } from "../../Error/AppError";
-import { IProduct } from "./product.interface";
+import { IProduct, IUpdateProduct } from "./product.interface";
 
 const addProduct = async (data: IProduct) => {
   console.dir(data, { depth: true });
@@ -17,13 +17,20 @@ const addProduct = async (data: IProduct) => {
   return result;
 };
 
-const getVendorShop = async (user: JwtPayload) => {
-  const userData = await prisma.vendor.findUnique({
-    where: { email: user?.userEmail },
+const updateProduct = async (
+  data: Partial<IUpdateProduct>,
+  id: string,
+  user: JwtPayload & { userEmail: string; role: string }
+) => {
+  await prisma.vendor.findUniqueOrThrow({
+    where: { email: user.userEmail },
   });
-
-  const result = await prisma.shop.findMany({
-    where: { vendorId: userData?.vendorId },
+  console.dir(data, { depth: true });
+  const result = await prisma.product.update({
+    where: { productId: id },
+    data: {
+      ...data,
+    },
   });
 
   return result;
@@ -31,5 +38,5 @@ const getVendorShop = async (user: JwtPayload) => {
 
 export const ProductService = {
   addProduct,
-  getVendorShop,
+  updateProduct,
 };
