@@ -79,7 +79,7 @@ model Product {
   productId         String   @id @default(uuid()) 
   name              String    @db.VarChar(50)
   price             Float    
-  categoryId          String   
+  categoryId         String   
   category Category @relation(fields: [categoryId], references: [categoryId])
   images            String[] 
   description       String?  

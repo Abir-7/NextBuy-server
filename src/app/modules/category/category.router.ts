@@ -8,4 +8,5 @@ router.post(
   auth("ADMIN"),
   CategoryController.createCategory
 );
+router.get("/", CategoryController.getAllCategory);
 export const CategoryRouter = router;

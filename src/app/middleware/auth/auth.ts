@@ -24,7 +24,7 @@ export const auth = (...userRole: T_UserRole[]) => {
         token,
         config.jwt_secrete_key as string
       ) as JwtPayload;
-      console.log(decoded, "decoded");
+
       const { role, userEmail } = decoded as JwtPayload;
 
       const user = await prisma.user.findUnique({
@@ -42,7 +42,6 @@ export const auth = (...userRole: T_UserRole[]) => {
       req.user = decoded as JwtPayload;
       next();
     } catch (error: any) {
-      console.log("hit", error);
       throw new AppError(401, "You have no access to this route");
     }
   });

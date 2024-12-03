@@ -8,7 +8,7 @@ const errorHandler = (
 ) => {
   const statusCode = 400;
   const message = err?.message || "Something Went Wrong";
-  console.log(err.message, "global error");
+
   res.status(statusCode).json({
     success: false,
     statusCode,

@@ -3,6 +3,7 @@ import { UserRouter } from "../modules/user/user.router";
 import { AuthRouter } from "../modules/auth/auth.route";
 import { CategoryRouter } from "../modules/category/category.router";
 import { ShopRouter } from "../modules/shop/shop.router";
+import { ProductRouter } from "../modules/product/product.router";
 
 const router = Router();
 const routeCollection = [
@@ -21,6 +22,10 @@ const routeCollection = [
   {
     path: "/shop",
     route: ShopRouter,
+  },
+  {
+    path: "/product",
+    route: ProductRouter,
   },
 ];
 

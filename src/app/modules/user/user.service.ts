@@ -3,8 +3,6 @@ import bcrypt from "bcrypt";
 import { config } from "../../config";
 import { tokenGenerator } from "../../utils/jsonTokenGenerator";
 const createUser = async (data: ICreateUser) => {
-  console.log(data);
-
   const { address, email, password, mobile, name, accountType } = data;
 
   const hashedPass = await bcrypt.hash(
