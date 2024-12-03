@@ -36,7 +36,23 @@ const updateProduct = async (
   return result;
 };
 
+const deleteProduct = async (
+  id: string,
+  user: JwtPayload & { userEmail: string; role: string }
+) => {
+  await prisma.vendor.findUniqueOrThrow({
+    where: { email: user.userEmail },
+  });
+
+  const result = await prisma.product.delete({
+    where: { productId: id },
+  });
+
+  return result;
+};
+
 export const ProductService = {
   addProduct,
   updateProduct,
+  deleteProduct,
 };
