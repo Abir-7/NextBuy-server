@@ -8,4 +8,6 @@ export interface IProduct {
   shopId: string; // UUID for shop
   sizes: Size[]; // Array of size strings (e.g., ['L', 'M'])
   images: string[]; // Array of image URLs
+  discounts: string;
+  description: string;
 }
