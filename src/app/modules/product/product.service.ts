@@ -4,7 +4,6 @@ import { AppError } from "../../Error/AppError";
 import { IProduct, IUpdateProduct } from "./product.interface";
 
 const addProduct = async (data: IProduct) => {
-  console.dir(data, { depth: true });
   const result = await prisma.product.create({
     data: {
       ...data,
@@ -24,7 +23,7 @@ const allProduct = async () => {
       shop: true,
     },
   });
-  console.log(result);
+
   return result;
 };
 
@@ -38,7 +37,7 @@ const singleProduct = async (id: string) => {
       shop: true,
     },
   });
-  console.log(result);
+
   return result;
 };
 
@@ -50,7 +49,7 @@ const updateProduct = async (
   await prisma.vendor.findUniqueOrThrow({
     where: { email: user.userEmail },
   });
-  console.dir(data, { depth: true });
+
   const result = await prisma.product.update({
     where: { productId: id },
     data: {

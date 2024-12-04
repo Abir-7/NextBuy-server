@@ -49,7 +49,7 @@ const getVendorShop = catchAsync(async (req, res) => {
 const getVendorSingleShop = catchAsync(async (req, res) => {
   const { id } = req.params;
   const result = await ShopService.getVendorSingleShop(req.user, id);
-  console.log("object");
+
   sendResponse(res, {
     success: true,
     statusCode: 200,

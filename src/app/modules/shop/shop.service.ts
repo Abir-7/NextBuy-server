@@ -17,8 +17,6 @@ const createShop = async (
     throw new AppError(404, "Failed to create Shop. User not found.");
   }
 
-  console.log(data);
-
   const result = await prisma.shop.create({
     data: { ...data, vendorId: userData.vendorId },
   });
@@ -35,8 +33,12 @@ const getSingleVendorShop = async (id: string) => {
     where: {
       shopId: id,
     },
-    include: { products: { include: { category: true } } },
+    include: {
+      products: { include: { category: true } },
+      followers: { include: { customer: { select: { email: true } } } },
+    },
   });
+
   return result;
 };
 
@@ -49,7 +51,7 @@ const getVendorShop = async (user: JwtPayload) => {
   const result = await prisma.shop.findMany({
     where: { vendorId: userData?.vendorId },
   });
-  console.dir(result, { depth: null });
+
   return result;
 };
 
@@ -62,7 +64,6 @@ const getVendorSingleShop = async (user: JwtPayload, id: string) => {
     include: { products: { include: { category: true } } },
   });
 
-  console.dir(result, { depth: null });
   return result;
 };
 

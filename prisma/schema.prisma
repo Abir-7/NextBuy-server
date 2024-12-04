@@ -41,7 +41,9 @@ model Customer {
   gender USER_GENDER?
   userId String @unique
   user User @relation(fields: [userId],references: [userId])
+ followers  Follower[]
   @@map("customer")
+
 }
 
 model Vendor {
@@ -69,6 +71,7 @@ model Shop {
   vendorId  String    
   vendor    Vendor   @relation(fields: [vendorId], references: [vendorId])
    products  Product[]
+    followers  Follower[]
   createdAt DateTime  @default(now()) 
   updatedAt DateTime  @updatedAt    
   @@map("shop")  
@@ -101,6 +104,20 @@ model Category {
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt 
   @@map("category")
+}
+
+
+//follow table
+model Follower {
+  id          String   @id @default(uuid())
+  shopId      String
+  customerId  String
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt 
+  shop        Shop     @relation(fields: [shopId], references: [shopId])
+  customer    Customer @relation(fields: [customerId], references: [customerId])
+  @@unique([shopId, customerId]) // Ensures a customer can't follow the same shop multiple times
+  @@map("follower")
 }
 
 
