@@ -2,6 +2,7 @@ import { JwtPayload } from "jsonwebtoken";
 import sendResponse from "../../utils/sendResponse";
 import catchAsync from "../../utils/tryCatch";
 import { ProductService } from "./product.service";
+import { pickField } from "../../utils/PickValidField";
 
 const addProduct = catchAsync(async (req, res) => {
   const result = await ProductService.addProduct(req.body);
@@ -15,13 +16,17 @@ const addProduct = catchAsync(async (req, res) => {
 });
 
 const allProduct = catchAsync(async (req, res) => {
-  const result = await ProductService.allProduct();
+  const paginationData = pickField(req.query, ["page", "limit", "sort"]);
+  console.log(req.query);
+  const filter = pickField(req.query, ["searchTerm", "categoryId"]);
+  const result = await ProductService.allProduct(paginationData, filter);
 
   sendResponse(res, {
     success: true,
     statusCode: 200,
     message: "Product are fetched Successfully",
-    data: result,
+    data: result.data,
+    meta: result.meta,
   });
 });
 

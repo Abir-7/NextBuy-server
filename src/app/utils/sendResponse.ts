@@ -1,9 +1,16 @@
 import { Response } from "express";
+type TMeta = {
+  limit: number;
+  page: number;
+  total: number;
+  totalPage: number;
+};
 
 interface IResponseData<T> {
   success: boolean;
   statusCode: number;
   message: string;
+  meta?: TMeta;
   data: T;
 }
 
@@ -12,7 +19,8 @@ const sendResponse = <T>(res: Response, data: IResponseData<T>) => {
     success: data.success,
     statusCode: data.statusCode,
     message: data.message,
-    data: data.data,
+    meta: data?.meta,
+    data: data?.data,
   });
 };
 
