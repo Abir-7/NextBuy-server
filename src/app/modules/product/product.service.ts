@@ -17,6 +17,31 @@ const addProduct = async (data: IProduct) => {
   return result;
 };
 
+const allProduct = async () => {
+  const result = await prisma.product.findMany({
+    include: {
+      category: true,
+      shop: true,
+    },
+  });
+  console.log(result);
+  return result;
+};
+
+const singleProduct = async (id: string) => {
+  const result = await prisma.product.findUniqueOrThrow({
+    where: {
+      productId: id,
+    },
+    include: {
+      category: true,
+      shop: true,
+    },
+  });
+  console.log(result);
+  return result;
+};
+
 const updateProduct = async (
   data: Partial<IUpdateProduct>,
   id: string,
@@ -55,4 +80,6 @@ export const ProductService = {
   addProduct,
   updateProduct,
   deleteProduct,
+  allProduct,
+  singleProduct,
 };

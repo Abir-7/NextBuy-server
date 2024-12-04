@@ -43,8 +43,9 @@ const getVendorSingleShop = async (user: JwtPayload, id: string) => {
   });
   const result = await prisma.shop.findFirst({
     where: { shopId: id },
-    include: { products: true },
+    include: { products: { include: { category: true } } },
   });
+
   console.dir(result, { depth: null });
   return result;
 };

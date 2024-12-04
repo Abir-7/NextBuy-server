@@ -14,6 +14,29 @@ const addProduct = catchAsync(async (req, res) => {
   });
 });
 
+const allProduct = catchAsync(async (req, res) => {
+  const result = await ProductService.allProduct();
+
+  sendResponse(res, {
+    success: true,
+    statusCode: 200,
+    message: "Product are fetched Successfully",
+    data: result,
+  });
+});
+
+const singleProduct = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  const result = await ProductService.singleProduct(id);
+
+  sendResponse(res, {
+    success: true,
+    statusCode: 200,
+    message: "Product is fetched Successfully",
+    data: result,
+  });
+});
+
 const updateProduct = catchAsync(async (req, res) => {
   const { id } = req.params;
   const user = req.user as JwtPayload & { userEmail: string; role: string };
@@ -44,4 +67,6 @@ export const ProductController = {
   addProduct,
   updateProduct,
   deleteProduct,
+  allProduct,
+  singleProduct,
 };
