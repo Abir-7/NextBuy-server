@@ -17,7 +17,7 @@ const addProduct = catchAsync(async (req, res) => {
 
 const allProduct = catchAsync(async (req, res) => {
   const paginationData = pickField(req.query, ["page", "limit", "sort"]);
-  console.log(req.query);
+
   const filter = pickField(req.query, ["searchTerm", "categoryId"]);
   const result = await ProductService.allProduct(paginationData, filter);
 
@@ -68,10 +68,21 @@ const deleteProduct = catchAsync(async (req, res) => {
   });
 });
 
+const flashProduct = catchAsync(async (req, res) => {
+  const result = await ProductService.flashProduct();
+  sendResponse(res, {
+    success: true,
+    statusCode: 200,
+    message: "Flash product fetched Successfully",
+    data: result,
+  });
+});
+
 export const ProductController = {
   addProduct,
   updateProduct,
   deleteProduct,
   allProduct,
   singleProduct,
+  flashProduct,
 };

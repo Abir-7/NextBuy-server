@@ -5,6 +5,8 @@ import { CategoryRouter } from "../modules/category/category.router";
 import { ShopRouter } from "../modules/shop/shop.router";
 import { ProductRouter } from "../modules/product/product.router";
 import { FollowRouter } from "../modules/follower/follower.route";
+import { OrderRouter } from "../modules/order/order.route";
+import { PaymentRouter } from "../modules/order/payment/payment.route";
 
 const router = Router();
 const routeCollection = [
@@ -31,6 +33,14 @@ const routeCollection = [
   {
     path: "/follower",
     route: FollowRouter,
+  },
+  {
+    path: "/order",
+    route: OrderRouter,
+  },
+  {
+    path: "/payment",
+    route: PaymentRouter,
   },
 ];
 

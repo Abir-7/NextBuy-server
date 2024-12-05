@@ -6,4 +6,7 @@ export const config = {
   saltRounds: process.env.SALTROUNDS,
   jwt_secrete_key: process.env.JWT_ACCESS_SECRET,
   jwt_secrete_date: process.env.JWT_ACCESS_EXPIRES_IN,
+  Signature_Key: process.env.Signature_Key,
+  Store_ID: process.env.Store_ID,
+  Api_EndPoint: process.env.Api_EndPoint,
 };

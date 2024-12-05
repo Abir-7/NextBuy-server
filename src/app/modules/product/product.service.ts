@@ -23,14 +23,11 @@ const allProduct = async (
   paginationData: IPaginationOptions,
   params: Record<string, unknown>
 ) => {
-  console.log(params);
-
   const { page, limit, skip } =
     paginationHelper.calculatePagination(paginationData);
 
   const { searchTerm, ...filterData } = params;
   let andCondtion: Prisma.ProductWhereInput[] = [];
-  console.log(filterData);
   if (Object.keys(filterData).length > 0) {
     andCondtion.push({
       AND: Object.keys(filterData)
@@ -53,12 +50,13 @@ const allProduct = async (
     });
   }
   const whereConditons: Prisma.ProductWhereInput = { AND: andCondtion };
-  console.dir(whereConditons, { depth: null });
+
   const result = await prisma.product.findMany({
     where: whereConditons,
     include: {
       category: true,
       shop: true,
+      flashSale: true,
     },
     skip: skip,
     take: limit,
@@ -83,13 +81,15 @@ const allProduct = async (
 };
 
 const singleProduct = async (id: string) => {
-  const result = await prisma.product.findUniqueOrThrow({
+  console.log(id);
+  const result = await prisma.product.findUnique({
     where: {
       productId: id,
     },
     include: {
       category: true,
       shop: true,
+      flashSale: true,
     },
   });
 
@@ -130,65 +130,56 @@ const deleteProduct = async (
   return result;
 };
 
+const flashProduct = async () => {
+  // Check if there's any active flash sale data
+  const existingFlashSale = await prisma.flashSale.findFirst({
+    where: { endAt: { gte: new Date() } },
+  });
+
+  if (!existingFlashSale) {
+    // Delete old flash sale data
+    await prisma.flashSale.deleteMany();
+
+    // Fetch a larger number of products to randomize
+    const allProducts = await prisma.product.findMany({
+      where: { stock: { gt: 0 } },
+      select: { productId: true }, // Fetch only necessary fields
+    });
+
+    // Shuffle the array to pick random products
+    const shuffledProducts = allProducts.sort(() => 0.5 - Math.random());
+
+    // Select up to 10 random products
+    const selectedProducts = shuffledProducts.slice(0, 30);
+
+    // Prepare flash sale data
+    const flashSaleData = selectedProducts.map((product) => ({
+      productId: product.productId,
+      discount: Math.floor(Math.random() * (25 - 15 + 1)) + 15, // Random discount between 15% and 25%
+      startAt: new Date(),
+      endAt: new Date(Date.now() + 24 * 60 * 60 * 1000), // Valid for 24 hours
+    }));
+
+    // Insert flash sale data
+    await prisma.flashSale.createMany({ data: flashSaleData });
+
+    const result = await prisma.flashSale.findMany({
+      include: { product: { include: { category: true, shop: true } } },
+    });
+    return result;
+  } else {
+    const result = await prisma.flashSale.findMany({
+      include: { product: { include: { category: true, shop: true } } },
+    });
+    return result;
+  }
+};
+
 export const ProductService = {
   addProduct,
   updateProduct,
   deleteProduct,
   allProduct,
   singleProduct,
+  flashProduct,
 };
-
-// const allProduct = async (query: Record<string, unknown>) => {
-//   let followedShopIds: string[] = [];
-
-//   // If email is provided, get the followed shop IDs
-//   if (!!query?.email) {
-//     const user = await prisma.customer.findUnique({
-//       where: {
-//         email: query.email as string,
-//       },
-//     });
-
-//     if (user?.customerId) {
-//       const followedShops = await prisma.follower.findMany({
-//         where: { customerId: user.customerId },
-//         select: { shopId: true },
-//       });
-
-//       followedShopIds = followedShops.map((shop) => shop.shopId);
-//     }
-//   }
-
-//   // First, fetch products from followed shops
-//   const followedProducts = await prisma.product.findMany({
-//     where: {
-//       shopId: { in: followedShopIds },
-//     },
-//     include: {
-//       category: true,
-//       shop: true,
-//     },
-//     orderBy: {
-//       createdAt: "desc", // Order by newest products from followed shops
-//     },
-//   });
-
-//   // Second, fetch products from other shops
-//   const otherProducts = await prisma.product.findMany({
-//     where: {
-//       shopId: { notIn: followedShopIds },
-//     },
-//     include: {
-//       category: true,
-//       shop: true,
-//     },
-//     orderBy: {
-//       createdAt: "desc", // Order by newest products from other shops
-//     },
-//   });
-
-//   // Combine the results, followed products first, then others
-//   const allProducts = [...followedProducts, ...otherProducts];
-
-//   return allProducts;
-// };
