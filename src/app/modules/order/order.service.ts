@@ -95,7 +95,7 @@ const getSingleOrder = async (id: string) => {
     },
     include: { items: { include: { product: true, shop: true } } },
   });
-  console.dir(result, { depth: null });
+
   return result;
 };
 

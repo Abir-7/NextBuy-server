@@ -58,10 +58,22 @@ const getVendorSingleShop = catchAsync(async (req, res) => {
   });
 });
 
+const blockShop = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  const result = await ShopService.blockShop(id);
+  sendResponse(res, {
+    success: true,
+    statusCode: 200,
+    message: "Shop active status changed.",
+    data: result,
+  });
+});
+
 export const ShopController = {
   createShop,
   getVendorShop,
   getVendorSingleShop,
   getAllVendorShop,
   getSingleVendorShop,
+  blockShop,
 };

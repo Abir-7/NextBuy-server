@@ -8,7 +8,7 @@ import prisma from "../../client/prisma";
 import { AppError } from "../../Error/AppError";
 import catchAsync from "../../utils/tryCatch";
 
-export type T_UserRole = "CUSTOMER" | "ADMIN" | "VENDOR";
+export type T_UserRole = "CUSTOMER" | "ADMIN" | "VENDOR" | "SUPERADMIN";
 export const auth = (...userRole: T_UserRole[]) => {
   return catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const tokenData = req.headers.authorization;

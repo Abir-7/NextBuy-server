@@ -13,6 +13,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserController = void 0;
+const PickValidField_1 = require("../../utils/PickValidField");
 const sendResponse_1 = __importDefault(require("../../utils/sendResponse"));
 const tryCatch_1 = __importDefault(require("../../utils/tryCatch"));
 const user_service_1 = require("./user.service");
@@ -25,6 +26,38 @@ const createUser = (0, tryCatch_1.default)((req, res) => __awaiter(void 0, void 
         data: result,
     });
 }));
+const getAllUser = (0, tryCatch_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const paginationData = (0, PickValidField_1.pickField)(req.query, ["page", "limit", "sort"]);
+    const filter = (0, PickValidField_1.pickField)(req.query, ["searchTerm", "isBlocked"]);
+    const result = yield user_service_1.UserService.getAllUser(paginationData, filter);
+    (0, sendResponse_1.default)(res, {
+        success: true,
+        statusCode: 200,
+        message: "All user are fetched successfully",
+        data: result,
+    });
+}));
+const blockUser = (0, tryCatch_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield user_service_1.UserService.userBlock(req.params.id);
+    (0, sendResponse_1.default)(res, {
+        success: true,
+        statusCode: 200,
+        message: "User Status Changed",
+        data: result,
+    });
+}));
+const deleteUser = (0, tryCatch_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield user_service_1.UserService.userDelete(req.params.id);
+    (0, sendResponse_1.default)(res, {
+        success: true,
+        statusCode: 200,
+        message: "User delete status Changed",
+        data: result,
+    });
+}));
 exports.UserController = {
     createUser,
+    getAllUser,
+    blockUser,
+    deleteUser,
 };

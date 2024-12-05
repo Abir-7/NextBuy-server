@@ -6,6 +6,9 @@ const auth_route_1 = require("../modules/auth/auth.route");
 const category_router_1 = require("../modules/category/category.router");
 const shop_router_1 = require("../modules/shop/shop.router");
 const product_router_1 = require("../modules/product/product.router");
+const follower_route_1 = require("../modules/follower/follower.route");
+const order_route_1 = require("../modules/order/order.route");
+const payment_route_1 = require("../modules/order/payment/payment.route");
 const router = (0, express_1.Router)();
 const routeCollection = [
     {
@@ -27,6 +30,18 @@ const routeCollection = [
     {
         path: "/product",
         route: product_router_1.ProductRouter,
+    },
+    {
+        path: "/follower",
+        route: follower_route_1.FollowRouter,
+    },
+    {
+        path: "/order",
+        route: order_route_1.OrderRouter,
+    },
+    {
+        path: "/payment",
+        route: payment_route_1.PaymentRouter,
     },
 ];
 routeCollection.map((route) => router.use(route.path, route.route));

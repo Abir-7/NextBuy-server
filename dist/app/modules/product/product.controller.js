@@ -16,6 +16,7 @@ exports.ProductController = void 0;
 const sendResponse_1 = __importDefault(require("../../utils/sendResponse"));
 const tryCatch_1 = __importDefault(require("../../utils/tryCatch"));
 const product_service_1 = require("./product.service");
+const PickValidField_1 = require("../../utils/PickValidField");
 const addProduct = (0, tryCatch_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield product_service_1.ProductService.addProduct(req.body);
     (0, sendResponse_1.default)(res, {
@@ -26,12 +27,15 @@ const addProduct = (0, tryCatch_1.default)((req, res) => __awaiter(void 0, void 
     });
 }));
 const allProduct = (0, tryCatch_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield product_service_1.ProductService.allProduct();
+    const paginationData = (0, PickValidField_1.pickField)(req.query, ["page", "limit", "sort"]);
+    const filter = (0, PickValidField_1.pickField)(req.query, ["searchTerm", "categoryId"]);
+    const result = yield product_service_1.ProductService.allProduct(paginationData, filter);
     (0, sendResponse_1.default)(res, {
         success: true,
         statusCode: 200,
         message: "Product are fetched Successfully",
-        data: result,
+        data: result.data,
+        meta: result.meta,
     });
 }));
 const singleProduct = (0, tryCatch_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -66,10 +70,20 @@ const deleteProduct = (0, tryCatch_1.default)((req, res) => __awaiter(void 0, vo
         data: result,
     });
 }));
+const flashProduct = (0, tryCatch_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield product_service_1.ProductService.flashProduct();
+    (0, sendResponse_1.default)(res, {
+        success: true,
+        statusCode: 200,
+        message: "Flash product fetched Successfully",
+        data: result,
+    });
+}));
 exports.ProductController = {
     addProduct,
     updateProduct,
     deleteProduct,
     allProduct,
     singleProduct,
+    flashProduct,
 };

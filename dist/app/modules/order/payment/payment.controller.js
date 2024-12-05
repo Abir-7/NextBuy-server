@@ -1,43 +1,53 @@
+"use strict";
 /* eslint-disable @typescript-eslint/no-explicit-any */
-
-import prisma from "../../../client/prisma";
-import catchAsync from "../../../utils/tryCatch";
-
-export const paymentConfirm = catchAsync(async (req, res): Promise<void> => {
-  // Ensure the return type is Promise<void>
-  const { id } = req.query;
-  if (!id) {
-    res.status(404).send("<h1>Order Id Not Found</h1>");
-    return; // No return value needed here
-  }
-
-  const orderData: any = await prisma.order.findUnique({
-    where: { id: id as string },
-    include: {
-      customer: true,
-      items: {
-        include: {
-          // Include order (the relation back to the Order model)
-          product: true, // Include product information in each order item
-        },
-      },
-    },
-  });
-
-  if (!orderData) {
-    res.status(404).send("<h1>Order not found</h1>");
-    return; // No return value needed here
-  }
-
-  if (orderData) {
-    await prisma.order.update({
-      where: { id: id as string },
-      data: { paymentStatus: "COMPLETED" },
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
-  }
-
-  // HTML page with basic order info in black and white color scheme
-  const htmlContent = `
+};
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.paymentConfirm = void 0;
+const prisma_1 = __importDefault(require("../../../client/prisma"));
+const tryCatch_1 = __importDefault(require("../../../utils/tryCatch"));
+exports.paymentConfirm = (0, tryCatch_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    // Ensure the return type is Promise<void>
+    const { id } = req.query;
+    if (!id) {
+        res.status(404).send("<h1>Order Id Not Found</h1>");
+        return; // No return value needed here
+    }
+    const orderData = yield prisma_1.default.order.findUnique({
+        where: { id: id },
+        include: {
+            customer: true,
+            items: {
+                include: {
+                    // Include order (the relation back to the Order model)
+                    product: true, // Include product information in each order item
+                },
+            },
+        },
+    });
+    if (!orderData) {
+        res.status(404).send("<h1>Order not found</h1>");
+        return; // No return value needed here
+    }
+    if (orderData) {
+        yield prisma_1.default.order.update({
+            where: { id: id },
+            data: { paymentStatus: "COMPLETED" },
+        });
+    }
+    console.dir(orderData, { depth: null });
+    // HTML page with basic order info in black and white color scheme
+    const htmlContent = `
   <html lang="en">
     <head>
       <meta charset="UTF-8">
@@ -101,9 +111,7 @@ export const paymentConfirm = catchAsync(async (req, res): Promise<void> => {
     <body>
       <div class="container">
         <h1>Order Confirmation</h1>
-        <p>Thank you for your purchase, <strong>${
-          orderData.customer.name
-        }</strong>!</p>
+        <p>Thank you for your purchase, <strong>${orderData.customer.name}</strong>!</p>
 
         <div class="customer-info">
           <h2>Customer Information</h2>
@@ -148,13 +156,11 @@ export const paymentConfirm = catchAsync(async (req, res): Promise<void> => {
             </thead>
             <tbody>
               ${orderData.items
-                .map((item: any) => {
-                  return `
+        .map((item) => {
+        return `
                     <tr>
            <td style="display: flex; align-items: center; font-weight: bold;">
-  <img src="${item.product.images[0]}" class="product-img" alt="${
-                    item.product.name
-                  }" style="width: 50px; height: 50px; object-fit: cover; margin-right: 10px;" />
+  <img src="${item.product.images[0]}" class="product-img" alt="${item.product.name}" style="width: 50px; height: 50px; object-fit: cover; margin-right: 10px;" />
   ${item.product.name}
 </td>
                       <td>${item.quantity}</td>
@@ -163,8 +169,8 @@ export const paymentConfirm = catchAsync(async (req, res): Promise<void> => {
                       <td>$${(item.price - item.discount) * item.quantity}</td>
                     </tr>
                   `;
-                })
-                .join("")}
+    })
+        .join("")}
             </tbody>
           </table>
         </div>
@@ -179,10 +185,8 @@ export const paymentConfirm = catchAsync(async (req, res): Promise<void> => {
     </body>
   </html>
 `;
-
-  res.send(htmlContent);
-
-  // Send the generated HTML response
-  res.send(htmlContent);
-  return;
-});
+    res.send(htmlContent);
+    // Send the generated HTML response
+    res.send(htmlContent);
+    return;
+}));

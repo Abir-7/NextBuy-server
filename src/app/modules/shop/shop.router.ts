@@ -9,5 +9,10 @@ router.get("/", auth("VENDOR"), ShopController.getVendorShop);
 router.get("/get-all-shop", ShopController.getAllVendorShop);
 router.get("/get-single-shop/:id", ShopController.getSingleVendorShop);
 router.get("/:id", auth("VENDOR"), ShopController.getVendorSingleShop);
+router.patch(
+  "/block-shop/:id",
+  auth("ADMIN", "SUPERADMIN"),
+  ShopController.blockShop
+);
 
 export const ShopRouter = router;

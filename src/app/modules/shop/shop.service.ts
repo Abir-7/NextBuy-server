@@ -24,7 +24,8 @@ const createShop = async (
 };
 // for all
 const getAllVendorShop = async () => {
-  const result = await prisma.shop.findMany();
+  const result = await prisma.shop.findMany({ include: { vendor: true } });
+
   return result;
 };
 
@@ -67,10 +68,24 @@ const getVendorSingleShop = async (user: JwtPayload, id: string) => {
   return result;
 };
 
+const blockShop = async (id: string) => {
+  const previous = await prisma.shop.findUnique({
+    where: {
+      shopId: id,
+    },
+  });
+  const result = await prisma.shop.update({
+    where: { shopId: id },
+    data: { isBlackListed: !previous?.isBlackListed },
+  });
+  return result;
+};
+
 export const ShopService = {
   createShop,
   getVendorShop,
   getVendorSingleShop,
   getAllVendorShop,
   getSingleVendorShop,
+  blockShop,
 };

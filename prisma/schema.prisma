@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -13,7 +7,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// Auth Releted Model
 model User {
   userId            String    @id @unique @default(uuid())
   email             String    @unique
@@ -25,6 +18,7 @@ model User {
   isVerified        Boolean   @default(false)
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @updatedAt
+  Admin             Admin?
   customer          Customer?
   vendor            Vendor?
 
@@ -35,14 +29,14 @@ model Customer {
   customerId String       @id @unique @default(uuid())
   email      String       @unique
   name       String       @db.VarChar(50)
-  image      String?
-  address    String
-  mobile     Int
-  gender     USER_GENDER?
   userId     String       @unique
+  address    String
+  gender     USER_GENDER?
+  mobile     Int
+  image      String?
+  orders     Order[]
   user       User         @relation(fields: [userId], references: [userId])
   followers  Follower[]
-  orders     Order[]
 
   @@map("customer")
 }
@@ -56,26 +50,39 @@ model Vendor {
   mobile   Int
   gender   USER_GENDER?
   userId   String       @unique
-  user     User         @relation(fields: [userId], references: [userId])
   shop     Shop[]
+  user     User         @relation(fields: [userId], references: [userId])
 
   @@map("vendor")
 }
 
-// Shop & Product Releted Model
+model Admin {
+  adminId String       @id @unique @default(uuid())
+  email   String       @unique
+  name    String       @db.VarChar(50)
+  image   String?
+  address String
+  mobile  String
+  gender  USER_GENDER?
+  userId  String       @unique
+  user    User         @relation(fields: [userId], references: [userId])
+
+  @@map("admin")
+}
 
 model Shop {
-  shopId    String      @id @default(uuid())
-  name      String      @unique @db.VarChar(50)
-  location  String
-  images    String[]
-  vendorId  String
-  vendor    Vendor      @relation(fields: [vendorId], references: [vendorId])
-  products  Product[]
-  followers Follower[]
-  orderitem OrderItem[]
-  createdAt DateTime    @default(now())
-  updatedAt DateTime    @updatedAt
+  shopId        String      @id @default(uuid())
+  name          String      @unique @db.VarChar(50)
+  location      String
+  vendorId      String
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  images        String[]
+  isBlackListed Boolean     @default(false)
+  orderitem     OrderItem[]
+  followers     Follower[]
+  products      Product[]
+  vendor        Vendor      @relation(fields: [vendorId], references: [vendorId])
 
   @@map("shop")
 }
@@ -85,19 +92,18 @@ model Product {
   name        String      @db.VarChar(50)
   price       Float
   categoryId  String
-  category    Category    @relation(fields: [categoryId], references: [categoryId])
   images      String[]
   description String
   stock       Int
   sizes       Size[]
   shopId      String
-  discounts   Int         @default(0)
-  shop        Shop        @relation(fields: [shopId], references: [shopId])
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
+  discounts   Int         @default(0)
   orders      OrderItem[]
-
-  flashSale FlashSale[]
+  flashSale   FlashSale[]
+  category    Category    @relation(fields: [categoryId], references: [categoryId])
+  shop        Shop        @relation(fields: [shopId], references: [shopId])
 
   @@map("product")
 }
@@ -108,9 +114,9 @@ model FlashSale {
   discount  Int
   startAt   DateTime
   endAt     DateTime
-  product   Product  @relation(fields: [productId], references: [productId])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  product   Product  @relation(fields: [productId], references: [productId])
 
   @@map("flash_sale")
 }
@@ -118,62 +124,56 @@ model FlashSale {
 model Category {
   categoryId String    @id @default(uuid())
   name       String    @unique @db.VarChar(50)
-  product    Product[]
   createdAt  DateTime  @default(now())
   updatedAt  DateTime  @updatedAt
+  product    Product[]
 
   @@map("category")
 }
 
-//follow table
 model Follower {
   id         String   @id @default(uuid())
   shopId     String
   customerId String
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
-  shop       Shop     @relation(fields: [shopId], references: [shopId])
   customer   Customer @relation(fields: [customerId], references: [customerId])
+  shop       Shop     @relation(fields: [shopId], references: [shopId])
 
-  @@unique([shopId, customerId]) // Ensures a customer can't follow the same shop multiple times
+  @@unique([shopId, customerId])
   @@map("follower")
 }
 
-//order table
-
 model Order {
-  id         String @id @default(uuid())
-  customerId String
-
-  customer      Customer       @relation(fields: [customerId], references: [customerId])
-  items         OrderItem[] // Relation to order items
-  total         Float // Total price before discounts
-  discounts     Float // Total discounts applied
-  subTotal      Float // Final total after discounts
-  status        ORDER_STATUS   @default(PENDING) // Order status: "pending", "onGoing", "delivered"
-  paymentStatus PAYMENT_STATUS @default(PENDING) // Payment status
-  transactionId String? // AmarPay transaction ID
+  id            String         @id @default(uuid())
+  customerId    String
+  total         Float
+  discounts     Float
+  subTotal      Float
+  transactionId String?
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
+  paymentStatus PAYMENT_STATUS @default(PENDING)
+  status        ORDER_STATUS   @default(PENDING)
+  customer      Customer       @relation(fields: [customerId], references: [customerId])
+  items         OrderItem[]
 }
 
 model OrderItem {
   id        String   @id @default(uuid())
   orderId   String
   productId String
-  product   Product  @relation(fields: [productId], references: [productId])
-  shopId    String
-  shop      Shop     @relation(fields: [shopId], references: [shopId])
-  size      String? // Size of the product (optional)
+  size      String?
   quantity  Int
-  price     Float // Price of the product at the time of order
-  discount  Float // Discount applied to this item
-  order     Order    @relation(fields: [orderId], references: [id])
+  price     Float
+  discount  Float
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  shopId    String
+  order     Order    @relation(fields: [orderId], references: [id])
+  product   Product  @relation(fields: [productId], references: [productId])
+  shop      Shop     @relation(fields: [shopId], references: [shopId])
 }
-
-//payment enum
 
 enum PAYMENT_STATUS {
   PENDING
@@ -187,7 +187,6 @@ enum ORDER_STATUS {
   DELIVERED
 }
 
-//All ENUM Model
 enum USER_GENDER {
   MALE
   FEMALE
@@ -197,9 +196,9 @@ enum USER_ROLE {
   CUSTOMER
   ADMIN
   VENDOR
+  SUPERADMIN
 }
 
-// ENUM for Product
 enum Size {
   S
   M

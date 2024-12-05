@@ -81,7 +81,6 @@ const allProduct = async (
 };
 
 const singleProduct = async (id: string) => {
-  console.log(id);
   const result = await prisma.product.findUnique({
     where: {
       productId: id,
