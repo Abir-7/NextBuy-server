@@ -125,6 +125,7 @@ model Category {
   categoryId String    @id @default(uuid())
   name       String    @unique @db.VarChar(50)
   createdAt  DateTime  @default(now())
+  isDeleted Boolean @default(false)
   updatedAt  DateTime  @updatedAt
   product    Product[]
 
