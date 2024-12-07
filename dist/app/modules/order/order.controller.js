@@ -39,7 +39,6 @@ const getSingleCustomerAllOrder = (0, tryCatch_1.default)((req, res) => __awaite
 }));
 const getSingleOrder = (0, tryCatch_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
-    console.log(id);
     const result = yield order_service_1.OrderService.getSingleOrder(id);
     (0, sendResponse_1.default)(res, {
         data: result,
@@ -48,8 +47,54 @@ const getSingleOrder = (0, tryCatch_1.default)((req, res) => __awaiter(void 0, v
         message: "Orders is fetched successfully",
     });
 }));
+const getAllOrder = (0, tryCatch_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const paginationData = (0, PickValidField_1.pickField)(req.query, ["page", "limit", "sort"]);
+    const result = yield order_service_1.OrderService.getAllOrder(paginationData);
+    (0, sendResponse_1.default)(res, {
+        meta: result.meta,
+        data: result.data,
+        statusCode: 200,
+        success: true,
+        message: "All Orders are fetched successfully",
+    });
+}));
+const updateOrder = (0, tryCatch_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield order_service_1.OrderService.updateOrder(req.params.id);
+    (0, sendResponse_1.default)(res, {
+        data: result,
+        statusCode: 200,
+        success: true,
+        message: "Orders is updated successfully",
+    });
+}));
+const getPendingOrder = (0, tryCatch_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const paginationData = (0, PickValidField_1.pickField)(req.query, ["page", "limit", "sort"]);
+    const result = yield order_service_1.OrderService.getPendingOrder(paginationData);
+    (0, sendResponse_1.default)(res, {
+        meta: result.meta,
+        data: result.data,
+        statusCode: 200,
+        success: true,
+        message: "Pending Orders are fetched successfully",
+    });
+}));
+const getSpeceficShopOrder = (0, tryCatch_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const paginationData = (0, PickValidField_1.pickField)(req.query, ["page", "limit", "sort"]);
+    const result = yield order_service_1.OrderService.getSpecificShopOrder(req.params.id, paginationData);
+    (0, sendResponse_1.default)(res, {
+        data: result.data,
+        meta: result.meta,
+        statusCode: 200,
+        success: true,
+        message: "Shop Orders are fetched successfully",
+    });
+}));
 exports.OrderController = {
     orderProduct,
+    getSpeceficShopOrder,
     getSingleCustomerAllOrder,
     getSingleOrder,
+    getPendingOrder,
+    getAllOrder,
+    updateOrder,
 };

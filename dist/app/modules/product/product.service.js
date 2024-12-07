@@ -32,6 +32,35 @@ const addProduct = (data) => __awaiter(void 0, void 0, void 0, function* () {
     });
     return result;
 });
+const cloneProduct = (data) => __awaiter(void 0, void 0, void 0, function* () {
+    const baseName = data.name;
+    // Fetch all products with similar names
+    const similarProducts = yield prisma_1.default.product.findMany({
+        where: {
+            name: {
+                startsWith: baseName,
+            },
+        },
+        select: {
+            name: true,
+        },
+    });
+    // Determine a unique name
+    let uniqueName = baseName;
+    if (similarProducts.length > 0) {
+        const nameSet = new Set(similarProducts.map((product) => product.name));
+        let count = 1;
+        while (nameSet.has(`${baseName} copy ${count}`)) {
+            count++;
+        }
+        uniqueName = `${baseName} copy ${count}`;
+    }
+    // Create a new product with the unique name
+    const result = yield prisma_1.default.product.create({
+        data: Object.assign(Object.assign({}, data), { name: uniqueName, price: Number(data.price), stock: Number(data.stock), discounts: Number(data.discounts) }),
+    });
+    return result;
+});
 const allProduct = (paginationData, params) => __awaiter(void 0, void 0, void 0, function* () {
     const { page, limit, skip } = paginationHelper_1.paginationHelper.calculatePagination(paginationData);
     const { searchTerm } = params, filterData = __rest(params, ["searchTerm"]);
@@ -74,16 +103,22 @@ const allProduct = (paginationData, params) => __awaiter(void 0, void 0, void 0,
                 createdAt: "desc",
             },
     });
+    const productsWithAverageRating = yield Promise.all(result.map((product) => __awaiter(void 0, void 0, void 0, function* () {
+        const avgRating = yield prisma_1.default.review.aggregate({
+            where: { productId: product.productId },
+            _avg: { rating: true },
+        });
+        return Object.assign(Object.assign({}, product), { averageRating: avgRating._avg.rating || 0 });
+    })));
     const total = yield prisma_1.default.product.count({
         where: whereConditons,
     });
     return {
         meta: { page, limit, total, totalPage: Math.ceil(total / limit) },
-        data: result,
+        data: !!result ? productsWithAverageRating : null,
     };
 });
 const singleProduct = (id) => __awaiter(void 0, void 0, void 0, function* () {
-    console.log(id);
     const result = yield prisma_1.default.product.findUnique({
         where: {
             productId: id,
@@ -92,9 +127,26 @@ const singleProduct = (id) => __awaiter(void 0, void 0, void 0, function* () {
             category: true,
             shop: true,
             flashSale: true,
+            Review: {
+                include: {
+                    customer: { select: { name: true, customerId: true, email: true } },
+                },
+            },
         },
     });
-    return result;
+    const avgRating = yield prisma_1.default.review.aggregate({
+        where: { productId: id },
+        _avg: { rating: true },
+        _count: true,
+    });
+    const relatedProduct = yield prisma_1.default.product.findMany({
+        where: { categoryId: result === null || result === void 0 ? void 0 : result.categoryId, name: { not: result === null || result === void 0 ? void 0 : result.name } },
+    });
+    const randomProducts = relatedProduct
+        .sort(() => Math.random() - 0.5) // Shuffle array
+        .slice(0, 30);
+    const data2 = Object.assign(Object.assign({}, result), { totalReview: avgRating._count, averageRating: avgRating._avg.rating || 0, relatedProduct: randomProducts });
+    return !!result ? data2 : null;
 });
 const updateProduct = (data, id, user) => __awaiter(void 0, void 0, void 0, function* () {
     yield prisma_1.default.vendor.findUniqueOrThrow({
@@ -160,4 +212,5 @@ exports.ProductService = {
     allProduct,
     singleProduct,
     flashProduct,
+    cloneProduct,
 };

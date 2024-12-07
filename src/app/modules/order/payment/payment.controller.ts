@@ -175,6 +175,9 @@ export const paymentConfirm = catchAsync(async (req, res): Promise<void> => {
           <p><strong>Discount:</strong> $${orderData.discounts}</p>
           <p><strong>Subtotal:</strong> $${orderData.subTotal}</p>
         </div>
+         <div class="back-to-home">
+          <a href="/">Back to Home</a>
+        </div>
       </div>
     </body>
   </html>
@@ -182,7 +185,5 @@ export const paymentConfirm = catchAsync(async (req, res): Promise<void> => {
 
   res.send(htmlContent);
 
-  // Send the generated HTML response
-  res.send(htmlContent);
   return;
 });

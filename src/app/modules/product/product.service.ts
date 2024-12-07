@@ -19,6 +19,47 @@ const addProduct = async (data: IProduct) => {
   return result;
 };
 
+const cloneProduct = async (data: IProduct) => {
+  const baseName = data.name;
+
+  // Fetch all products with similar names
+  const similarProducts = await prisma.product.findMany({
+    where: {
+      name: {
+        startsWith: baseName,
+      },
+    },
+    select: {
+      name: true,
+    },
+  });
+
+  // Determine a unique name
+  let uniqueName = baseName;
+  if (similarProducts.length > 0) {
+    const nameSet = new Set(similarProducts.map((product) => product.name));
+
+    let count = 1;
+    while (nameSet.has(`${baseName} copy ${count}`)) {
+      count++;
+    }
+    uniqueName = `${baseName} copy ${count}`;
+  }
+
+  // Create a new product with the unique name
+  const result = await prisma.product.create({
+    data: {
+      ...data,
+      name: uniqueName, // Use the unique name
+      price: Number(data.price),
+      stock: Number(data.stock),
+      discounts: Number(data.discounts),
+    },
+  });
+
+  return result;
+};
+
 const allProduct = async (
   paginationData: IPaginationOptions,
   params: Record<string, unknown>
@@ -58,6 +99,7 @@ const allProduct = async (
       shop: true,
       flashSale: true,
     },
+
     skip: skip,
     take: limit,
     orderBy: paginationData?.sort
@@ -70,13 +112,27 @@ const allProduct = async (
         },
   });
 
+  const productsWithAverageRating = await Promise.all(
+    result.map(async (product) => {
+      const avgRating = await prisma.review.aggregate({
+        where: { productId: product.productId },
+        _avg: { rating: true },
+      });
+
+      return {
+        ...product,
+        averageRating: avgRating._avg.rating || 0, // Default to 0 if no ratings
+      };
+    })
+  );
+
   const total = await prisma.product.count({
     where: whereConditons,
   });
 
   return {
     meta: { page, limit, total, totalPage: Math.ceil(total / limit) },
-    data: result,
+    data: !!result ? productsWithAverageRating : null,
   };
 };
 
@@ -89,10 +145,33 @@ const singleProduct = async (id: string) => {
       category: true,
       shop: true,
       flashSale: true,
+      Review: {
+        include: {
+          customer: { select: { name: true, customerId: true, email: true } },
+        },
+      },
     },
   });
+  const avgRating = await prisma.review.aggregate({
+    where: { productId: id },
+    _avg: { rating: true },
+    _count: true,
+  });
 
-  return result;
+  const relatedProduct = await prisma.product.findMany({
+    where: { categoryId: result?.categoryId, name: { not: result?.name } },
+  });
+  const randomProducts = relatedProduct
+    .sort(() => Math.random() - 0.5) // Shuffle array
+    .slice(0, 30);
+  const data2 = {
+    ...result,
+    totalReview: avgRating._count,
+    averageRating: avgRating._avg.rating || 0,
+    relatedProduct: randomProducts,
+  };
+
+  return !!result ? data2 : null;
 };
 
 const updateProduct = async (
@@ -181,4 +260,5 @@ export const ProductService = {
   allProduct,
   singleProduct,
   flashProduct,
+  cloneProduct,
 };

@@ -1,3 +1,4 @@
+import { pickField } from "../../utils/PickValidField";
 import sendResponse from "../../utils/sendResponse";
 import catchAsync from "../../utils/tryCatch";
 import { ShopService } from "./shop.service";
@@ -15,13 +16,15 @@ const createShop = catchAsync(async (req, res) => {
 
 //for user
 const getAllVendorShop = catchAsync(async (req, res) => {
-  const result = await ShopService.getAllVendorShop();
+  const paginationData = pickField(req.query, ["page", "limit", "sort"]);
+  const result = await ShopService.getAllVendorShop(paginationData);
 
   sendResponse(res, {
     success: true,
     statusCode: 200,
     message: "All Shop are fetched Successfully",
-    data: result,
+    data: result.data,
+    meta: result.meta,
   });
 });
 

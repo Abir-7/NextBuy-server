@@ -7,6 +7,9 @@ import { ProductRouter } from "../modules/product/product.router";
 import { FollowRouter } from "../modules/follower/follower.route";
 import { OrderRouter } from "../modules/order/order.route";
 import { PaymentRouter } from "../modules/order/payment/payment.route";
+import { RatingRouter } from "../modules/rating/rating.router";
+import { CuponRouter } from "../modules/cupon/cupon.route";
+import { DashboardRouter } from "../modules/dashboard/dashboard.route";
 
 const router = Router();
 const routeCollection = [
@@ -41,6 +44,18 @@ const routeCollection = [
   {
     path: "/payment",
     route: PaymentRouter,
+  },
+  {
+    path: "/rating",
+    route: RatingRouter,
+  },
+  {
+    path: "/cupon",
+    route: CuponRouter,
+  },
+  {
+    path: "/dashboard",
+    route: DashboardRouter,
   },
 ];
 

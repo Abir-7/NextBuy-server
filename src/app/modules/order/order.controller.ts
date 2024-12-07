@@ -35,9 +35,7 @@ const getSingleCustomerAllOrder = catchAsync(async (req, res) => {
 
 const getSingleOrder = catchAsync(async (req, res) => {
   const { id } = req.params;
-
   const result = await OrderService.getSingleOrder(id);
-
   sendResponse(res, {
     data: result,
     statusCode: 200,
@@ -46,8 +44,61 @@ const getSingleOrder = catchAsync(async (req, res) => {
   });
 });
 
+const getAllOrder = catchAsync(async (req, res) => {
+  const paginationData = pickField(req.query, ["page", "limit", "sort"]);
+  const result = await OrderService.getAllOrder(paginationData);
+  sendResponse(res, {
+    meta: result.meta,
+    data: result.data,
+    statusCode: 200,
+    success: true,
+    message: "All Orders are fetched successfully",
+  });
+});
+
+const updateOrder = catchAsync(async (req, res) => {
+  const result = await OrderService.updateOrder(req.params.id);
+  sendResponse(res, {
+    data: result,
+    statusCode: 200,
+    success: true,
+    message: "Orders is updated successfully",
+  });
+});
+
+const getPendingOrder = catchAsync(async (req, res) => {
+  const paginationData = pickField(req.query, ["page", "limit", "sort"]);
+  const result = await OrderService.getPendingOrder(paginationData);
+  sendResponse(res, {
+    meta: result.meta,
+    data: result.data,
+    statusCode: 200,
+    success: true,
+    message: "Pending Orders are fetched successfully",
+  });
+});
+
+const getSpeceficShopOrder = catchAsync(async (req, res) => {
+  const paginationData = pickField(req.query, ["page", "limit", "sort"]);
+  const result = await OrderService.getSpecificShopOrder(
+    req.params.id,
+    paginationData
+  );
+  sendResponse(res, {
+    data: result.data,
+    meta: result.meta,
+    statusCode: 200,
+    success: true,
+    message: "Shop Orders are fetched successfully",
+  });
+});
+
 export const OrderController = {
   orderProduct,
+  getSpeceficShopOrder,
   getSingleCustomerAllOrder,
   getSingleOrder,
+  getPendingOrder,
+  getAllOrder,
+  updateOrder,
 };

@@ -13,6 +13,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ShopController = void 0;
+const PickValidField_1 = require("../../utils/PickValidField");
 const sendResponse_1 = __importDefault(require("../../utils/sendResponse"));
 const tryCatch_1 = __importDefault(require("../../utils/tryCatch"));
 const shop_service_1 = require("./shop.service");
@@ -27,12 +28,14 @@ const createShop = (0, tryCatch_1.default)((req, res) => __awaiter(void 0, void 
 }));
 //for user
 const getAllVendorShop = (0, tryCatch_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield shop_service_1.ShopService.getAllVendorShop();
+    const paginationData = (0, PickValidField_1.pickField)(req.query, ["page", "limit", "sort"]);
+    const result = yield shop_service_1.ShopService.getAllVendorShop(paginationData);
     (0, sendResponse_1.default)(res, {
         success: true,
         statusCode: 200,
         message: "All Shop are fetched Successfully",
-        data: result,
+        data: result.data,
+        meta: result.meta,
     });
 }));
 const getSingleVendorShop = (0, tryCatch_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {

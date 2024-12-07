@@ -11,7 +11,19 @@ const userLogin = catchAsync(async (req, res) => {
     data: result,
   });
 });
+const resetPassLink = catchAsync(async (req, res) => {
+  const userEmail = req.body.email;
 
+  const result = await AuthService.userResetPassLinkGenarator(userEmail);
+
+  sendResponse(res, {
+    data: { token: result },
+    statusCode: 200,
+    success: true,
+    message: "Reset link sent",
+  });
+});
 export const AuthController = {
   userLogin,
+  resetPassLink,
 };

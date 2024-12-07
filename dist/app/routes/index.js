@@ -9,6 +9,9 @@ const product_router_1 = require("../modules/product/product.router");
 const follower_route_1 = require("../modules/follower/follower.route");
 const order_route_1 = require("../modules/order/order.route");
 const payment_route_1 = require("../modules/order/payment/payment.route");
+const rating_router_1 = require("../modules/rating/rating.router");
+const cupon_route_1 = require("../modules/cupon/cupon.route");
+const dashboard_route_1 = require("../modules/dashboard/dashboard.route");
 const router = (0, express_1.Router)();
 const routeCollection = [
     {
@@ -42,6 +45,18 @@ const routeCollection = [
     {
         path: "/payment",
         route: payment_route_1.PaymentRouter,
+    },
+    {
+        path: "/rating",
+        route: rating_router_1.RatingRouter,
+    },
+    {
+        path: "/cupon",
+        route: cupon_route_1.CuponRouter,
+    },
+    {
+        path: "/dashboard",
+        route: dashboard_route_1.DashboardRouter,
     },
 ];
 routeCollection.map((route) => router.use(route.path, route.route));

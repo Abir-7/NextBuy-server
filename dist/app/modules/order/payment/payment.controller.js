@@ -45,7 +45,6 @@ exports.paymentConfirm = (0, tryCatch_1.default)((req, res) => __awaiter(void 0,
             data: { paymentStatus: "COMPLETED" },
         });
     }
-    console.dir(orderData, { depth: null });
     // HTML page with basic order info in black and white color scheme
     const htmlContent = `
   <html lang="en">
@@ -181,12 +180,13 @@ exports.paymentConfirm = (0, tryCatch_1.default)((req, res) => __awaiter(void 0,
           <p><strong>Discount:</strong> $${orderData.discounts}</p>
           <p><strong>Subtotal:</strong> $${orderData.subTotal}</p>
         </div>
+         <div class="back-to-home">
+          <a href="/">Back to Home</a>
+        </div>
       </div>
     </body>
   </html>
 `;
-    res.send(htmlContent);
-    // Send the generated HTML response
     res.send(htmlContent);
     return;
 }));

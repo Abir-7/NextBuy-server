@@ -19,10 +19,32 @@ const createCategory = (data) => __awaiter(void 0, void 0, void 0, function* () 
     return result;
 });
 const getAllCategory = () => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield prisma_1.default.category.findMany();
+    const result = yield prisma_1.default.category.findMany({
+        where: {
+            isDeleted: false,
+        },
+    });
+    return result;
+});
+const updateCategory = (id, data) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield prisma_1.default.category.update({
+        where: { categoryId: id },
+        data: data,
+    });
+    return result;
+});
+const deleteCategory = (id) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield prisma_1.default.category.update({
+        where: { categoryId: id },
+        data: {
+            isDeleted: true,
+        },
+    });
     return result;
 });
 exports.CategoryService = {
     createCategory,
     getAllCategory,
+    updateCategory,
+    deleteCategory,
 };

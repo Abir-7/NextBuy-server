@@ -17,6 +17,7 @@ const bcrypt_1 = __importDefault(require("bcrypt"));
 const prisma_1 = __importDefault(require("../../client/prisma"));
 const AppError_1 = require("../../Error/AppError");
 const jsonTokenGenerator_1 = require("../../utils/jsonTokenGenerator");
+const nodeMailer_1 = require("../../utils/nodeMailer");
 const userLogin = (data) => __awaiter(void 0, void 0, void 0, function* () {
     const user = yield prisma_1.default.user.findUnique({
         where: { email: data.email },
@@ -33,6 +34,28 @@ const userLogin = (data) => __awaiter(void 0, void 0, void 0, function* () {
     }
     return { token };
 });
+const userResetPassLinkGenarator = (userEmail) => __awaiter(void 0, void 0, void 0, function* () {
+    const findUser = yield prisma_1.default.user.findUnique({
+        where: { email: userEmail },
+    });
+    if (!findUser) {
+        throw new AppError_1.AppError(500, "User not found");
+    }
+    const accessToken = (0, jsonTokenGenerator_1.tokenGenerator)({
+        userEmail: userEmail,
+        role: "",
+    }, "5min");
+    // { to, subject, text, html }
+    yield (0, nodeMailer_1.sendMail)({
+        to: userEmail,
+        subject: "Reset pass link",
+        text: "Change your pass within 5min",
+        html: `<a href="http://localhost:3000/reset-password?email=${userEmail}&token=${accessToken}">Reset Link</a>
+  <p>Change your pass within 5min</p>`,
+    });
+    return "";
+});
 exports.AuthService = {
     userLogin,
+    userResetPassLinkGenarator,
 };

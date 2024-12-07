@@ -14,4 +14,5 @@ export interface IOrderRequest {
   discounts: number; // Total discounts applied to the order
   subTotal: number; // Final total after discounts
   paymentStatus?: "PENDING" | "COMPLETED" | "FAILED"; // Optional payment status
+  couponId: string;
 }

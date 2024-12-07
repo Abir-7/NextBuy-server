@@ -39,6 +39,7 @@ model Customer {
   followers  Follower[]
 
   @@map("customer")
+  Review Review[]
 }
 
 model Vendor {
@@ -85,6 +86,7 @@ model Shop {
   vendor        Vendor      @relation(fields: [vendorId], references: [vendorId])
 
   @@map("shop")
+  Coupon Coupon[]
 }
 
 model Product {
@@ -106,6 +108,7 @@ model Product {
   shop        Shop        @relation(fields: [shopId], references: [shopId])
 
   @@map("product")
+  Review Review[]
 }
 
 model FlashSale {
@@ -146,20 +149,22 @@ model Follower {
 }
 
 model Order {
-  id            String         @id @default(uuid())
-  customerId    String
-  total         Float
-  discounts     Float
-  subTotal      Float
-  transactionId String?
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
-  paymentStatus PAYMENT_STATUS @default(PENDING)
-  status        ORDER_STATUS   @default(PENDING)
-  customer      Customer       @relation(fields: [customerId], references: [customerId])
-  items         OrderItem[]
+  id             String         @id @default(uuid())
+  customerId     String
+  total          Float
+  discounts      Float
+  subTotal       Float
+  transactionId  String?
+  couponId       String?        // Relation to Coupon
+  coupon         Coupon?        @relation(fields: [couponId], references: [id])
+  couponDiscount Float?         // Discount amount applied from the coupon
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  paymentStatus  PAYMENT_STATUS @default(PENDING)
+  status         ORDER_STATUS   @default(PENDING)
+  customer       Customer       @relation(fields: [customerId], references: [customerId])
+  items          OrderItem[]
 }
-
 model OrderItem {
   id        String   @id @default(uuid())
   orderId   String
@@ -174,7 +179,46 @@ model OrderItem {
   order     Order    @relation(fields: [orderId], references: [id])
   product   Product  @relation(fields: [productId], references: [productId])
   shop      Shop     @relation(fields: [shopId], references: [shopId])
+  Review Review[]
 }
+
+model Coupon {
+  id           String   @id @default(uuid())
+  code         String   @unique
+  discount     Float    // Discount amount
+    // Maximum number of times this coupon can be used
+  currentUses  Int      @default(0) // Tracks how many times the coupon has been used
+  expiresAt    DateTime? // Expiration date
+
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  shopId     String
+  shop       Shop   @relation(fields: [shopId], references: [shopId])
+  Order Order[]
+}
+
+// review table
+
+model Review {
+  reviewId             String      @id @default(uuid())
+  orderItemId    String
+  orderItem      OrderItem   @relation(fields: [orderItemId], references: [id])
+  customerId     String
+  customer        Customer     @relation(fields: [customerId], references: [customerId]) 
+  productId String
+  product Product @relation(fields: [productId],references: [productId])
+  rating         Int         // Rating value (e.g., 1 to 5)
+  comment        String?     // User's review comment
+  vendorReply    String?     // Vendor's reply to the review
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+}
+
+
+
+
+
+
 
 enum PAYMENT_STATUS {
   PENDING
@@ -184,7 +228,7 @@ enum PAYMENT_STATUS {
 
 enum ORDER_STATUS {
   PENDING
-  OnGOING
+  ONGOING
   DELIVERED
 }
 
@@ -207,3 +251,5 @@ enum Size {
   XL
   XXL
 }
+
+

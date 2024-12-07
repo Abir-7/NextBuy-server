@@ -10,9 +10,11 @@ router.patch(
   auth("SUPERADMIN", "ADMIN"),
   UserController.blockUser
 );
+router.patch("/set-pass", UserController.setNewPassword);
 router.patch(
   "/delete/:id",
   auth("SUPERADMIN", "ADMIN"),
   UserController.deleteUser
 );
+
 export const UserRouter = router;

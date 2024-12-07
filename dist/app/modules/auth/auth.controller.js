@@ -25,6 +25,17 @@ const userLogin = (0, tryCatch_1.default)((req, res) => __awaiter(void 0, void 0
         data: result,
     });
 }));
+const resetPassLink = (0, tryCatch_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const userEmail = req.body.email;
+    const result = yield auth_service_1.AuthService.userResetPassLinkGenarator(userEmail);
+    (0, sendResponse_1.default)(res, {
+        data: { token: result },
+        statusCode: 200,
+        success: true,
+        message: "Reset link sent",
+    });
+}));
 exports.AuthController = {
     userLogin,
+    resetPassLink,
 };

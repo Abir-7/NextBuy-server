@@ -9,4 +9,6 @@ export const config = {
   Signature_Key: process.env.Signature_Key,
   Store_ID: process.env.Store_ID,
   Api_EndPoint: process.env.Api_EndPoint,
+  email_pass: process.env.EMAIL_PASS,
+  user_email: process.env.EMAIL_USER,
 };

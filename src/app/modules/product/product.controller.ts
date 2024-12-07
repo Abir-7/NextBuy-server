@@ -15,6 +15,17 @@ const addProduct = catchAsync(async (req, res) => {
   });
 });
 
+const cloneProduct = catchAsync(async (req, res) => {
+  const result = await ProductService.cloneProduct(req.body);
+
+  sendResponse(res, {
+    success: true,
+    statusCode: 200,
+    message: "Product clone Successfully",
+    data: result,
+  });
+});
+
 const allProduct = catchAsync(async (req, res) => {
   const paginationData = pickField(req.query, ["page", "limit", "sort"]);
 
@@ -85,4 +96,5 @@ export const ProductController = {
   allProduct,
   singleProduct,
   flashProduct,
+  cloneProduct,
 };

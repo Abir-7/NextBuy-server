@@ -1,0 +1,11 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.RatingRouter = void 0;
+const express_1 = require("express");
+const auth_1 = require("../../middleware/auth/auth");
+const rating_controller_1 = require("./rating.controller");
+const router = (0, express_1.Router)();
+router.post("/add-rating", (0, auth_1.auth)("CUSTOMER"), rating_controller_1.RatingController.addRating);
+router.get("/get-rating-by-shop", (0, auth_1.auth)("VENDOR"), rating_controller_1.RatingController.getUserRatingByShop);
+router.patch("/reply", (0, auth_1.auth)("VENDOR"), rating_controller_1.RatingController.replyToReview);
+exports.RatingRouter = router;

@@ -23,7 +23,8 @@ const getAllUser = catchAsync(async (req, res) => {
     success: true,
     statusCode: 200,
     message: "All user are fetched successfully",
-    data: result,
+    data: result.data,
+    meta: result.meta,
   });
 });
 
@@ -45,10 +46,25 @@ const deleteUser = catchAsync(async (req, res) => {
     data: result,
   });
 });
+const setNewPassword = catchAsync(async (req, res) => {
+  const data = req.body;
 
+  const result = await UserService.setUserNewPassword(
+    data?.token,
+    data?.password
+  );
+
+  sendResponse(res, {
+    data: result,
+    statusCode: 200,
+    success: true,
+    message: "Password Updated Successfully",
+  });
+});
 export const UserController = {
   createUser,
   getAllUser,
   blockUser,
   deleteUser,
+  setNewPassword,
 };

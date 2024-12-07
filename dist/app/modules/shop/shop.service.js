@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ShopService = void 0;
 const prisma_1 = __importDefault(require("../../client/prisma"));
 const AppError_1 = require("../../Error/AppError");
+const paginationHelper_1 = require("../../utils/paginationHelper");
 const createShop = (data, user) => __awaiter(void 0, void 0, void 0, function* () {
     const userData = yield prisma_1.default.vendor.findUnique({
         where: { email: user === null || user === void 0 ? void 0 : user.userEmail },
@@ -28,10 +29,25 @@ const createShop = (data, user) => __awaiter(void 0, void 0, void 0, function* (
     return result;
 });
 // for all
-const getAllVendorShop = () => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield prisma_1.default.shop.findMany({ include: { vendor: true } });
-    console.log(result);
-    return result;
+const getAllVendorShop = (paginationData) => __awaiter(void 0, void 0, void 0, function* () {
+    const { page, limit, skip } = paginationHelper_1.paginationHelper.calculatePagination(paginationData);
+    const result = yield prisma_1.default.shop.findMany({
+        include: { vendor: true, followers: true },
+        skip: skip,
+        take: limit,
+        orderBy: (paginationData === null || paginationData === void 0 ? void 0 : paginationData.sort)
+            ? {
+                [paginationData.sort.split("-")[0]]: paginationData.sort.split("-")[1],
+            }
+            : {
+                createdAt: "desc",
+            },
+    });
+    const total = yield prisma_1.default.shop.count();
+    return {
+        meta: { page, limit, total, totalPage: Math.ceil(total / limit) },
+        data: result,
+    };
 });
 const getSingleVendorShop = (id) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield prisma_1.default.shop.findUnique({

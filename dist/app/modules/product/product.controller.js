@@ -26,6 +26,15 @@ const addProduct = (0, tryCatch_1.default)((req, res) => __awaiter(void 0, void 
         data: result,
     });
 }));
+const cloneProduct = (0, tryCatch_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield product_service_1.ProductService.cloneProduct(req.body);
+    (0, sendResponse_1.default)(res, {
+        success: true,
+        statusCode: 200,
+        message: "Product clone Successfully",
+        data: result,
+    });
+}));
 const allProduct = (0, tryCatch_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const paginationData = (0, PickValidField_1.pickField)(req.query, ["page", "limit", "sort"]);
     const filter = (0, PickValidField_1.pickField)(req.query, ["searchTerm", "categoryId"]);
@@ -86,4 +95,5 @@ exports.ProductController = {
     allProduct,
     singleProduct,
     flashProduct,
+    cloneProduct,
 };

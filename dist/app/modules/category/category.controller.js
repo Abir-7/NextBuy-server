@@ -34,7 +34,27 @@ const getAllCategory = (0, tryCatch_1.default)((req, res) => __awaiter(void 0, v
         data: result,
     });
 }));
+const updateCategory = (0, tryCatch_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield category_service_1.CategoryService.updateCategory(req.params.id, req.body);
+    (0, sendResponse_1.default)(res, {
+        success: true,
+        statusCode: 200,
+        message: "Category is updated successfully",
+        data: result,
+    });
+}));
+const deleteCategory = (0, tryCatch_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield category_service_1.CategoryService.deleteCategory(req.params.id);
+    (0, sendResponse_1.default)(res, {
+        success: true,
+        statusCode: 200,
+        message: "Category is deleted successfully",
+        data: result,
+    });
+}));
 exports.CategoryController = {
     createCategory,
     getAllCategory,
+    updateCategory,
+    deleteCategory,
 };

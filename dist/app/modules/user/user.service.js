@@ -29,6 +29,7 @@ const bcrypt_1 = __importDefault(require("bcrypt"));
 const config_1 = require("../../config");
 const jsonTokenGenerator_1 = require("../../utils/jsonTokenGenerator");
 const paginationHelper_1 = require("../../utils/paginationHelper");
+const AppError_1 = require("../../Error/AppError");
 const createUser = (data) => __awaiter(void 0, void 0, void 0, function* () {
     const { address, email, password, mobile, name, accountType } = data;
     const hashedPass = yield bcrypt_1.default.hash(password, Number(config_1.config.saltRounds));
@@ -116,8 +117,21 @@ const getAllUser = (paginationData, params) => __awaiter(void 0, void 0, void 0,
             vendor: true,
             customer: true,
         },
+        skip: skip,
+        take: limit,
+        orderBy: (paginationData === null || paginationData === void 0 ? void 0 : paginationData.sort)
+            ? {
+                [paginationData.sort.split("-")[0]]: paginationData.sort.split("-")[1],
+            }
+            : {
+                createdAt: "desc",
+            },
     });
-    return result;
+    const total = yield prisma_1.default.user.count({ where: whereConditons });
+    return {
+        meta: { page, limit, total, totalPage: Math.ceil(total / limit) },
+        data: result,
+    };
 });
 const userBlock = (id) => __awaiter(void 0, void 0, void 0, function* () {
     const previous = yield prisma_1.default.user.findUnique({
@@ -145,8 +159,25 @@ const userDelete = (id) => __awaiter(void 0, void 0, void 0, function* () {
     });
     return result;
 });
+const setUserNewPassword = (token, password) => __awaiter(void 0, void 0, void 0, function* () {
+    // Use the utility to decode the token
+    const decoded = (0, jsonTokenGenerator_1.verifyToken)(token);
+    const isUserExist = yield prisma_1.default.user.findUnique({
+        where: { email: decoded.userEmail },
+    });
+    if (!isUserExist) {
+        throw new AppError_1.AppError(404, "User not Found");
+    }
+    const hashedPassword = yield bcrypt_1.default.hash(password, Number(config_1.config.saltRounds));
+    const result = yield prisma_1.default.user.update({
+        where: { email: decoded.userEmail },
+        data: { password: hashedPassword },
+    });
+    return result;
+});
 exports.UserService = {
     createUser,
+    setUserNewPassword,
     getAllUser,
     userBlock,
     userDelete,

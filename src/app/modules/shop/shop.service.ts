@@ -1,6 +1,8 @@
 import { JwtPayload } from "jsonwebtoken";
 import prisma from "../../client/prisma";
 import { AppError } from "../../Error/AppError";
+import { IPaginationOptions } from "../../interface/pagination.interface";
+import { paginationHelper } from "../../utils/paginationHelper";
 
 const createShop = async (
   data: {
@@ -23,10 +25,28 @@ const createShop = async (
   return result;
 };
 // for all
-const getAllVendorShop = async () => {
-  const result = await prisma.shop.findMany({ include: { vendor: true } });
+const getAllVendorShop = async (paginationData: IPaginationOptions) => {
+  const { page, limit, skip } =
+    paginationHelper.calculatePagination(paginationData);
+  const result = await prisma.shop.findMany({
+    include: { vendor: true, followers: true },
+    skip: skip,
+    take: limit,
+    orderBy: paginationData?.sort
+      ? {
+          [paginationData.sort.split("-")[0]]:
+            paginationData.sort.split("-")[1],
+        }
+      : {
+          createdAt: "desc",
+        },
+  });
+  const total = await prisma.shop.count();
 
-  return result;
+  return {
+    meta: { page, limit, total, totalPage: Math.ceil(total / limit) },
+    data: result,
+  };
 };
 
 const getSingleVendorShop = async (id: string) => {

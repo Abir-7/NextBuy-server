@@ -34,7 +34,8 @@ const getAllUser = (0, tryCatch_1.default)((req, res) => __awaiter(void 0, void 
         success: true,
         statusCode: 200,
         message: "All user are fetched successfully",
-        data: result,
+        data: result.data,
+        meta: result.meta,
     });
 }));
 const blockUser = (0, tryCatch_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -55,9 +56,20 @@ const deleteUser = (0, tryCatch_1.default)((req, res) => __awaiter(void 0, void 
         data: result,
     });
 }));
+const setNewPassword = (0, tryCatch_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const data = req.body;
+    const result = yield user_service_1.UserService.setUserNewPassword(data === null || data === void 0 ? void 0 : data.token, data === null || data === void 0 ? void 0 : data.password);
+    (0, sendResponse_1.default)(res, {
+        data: result,
+        statusCode: 200,
+        success: true,
+        message: "Password Updated Successfully",
+    });
+}));
 exports.UserController = {
     createUser,
     getAllUser,
     blockUser,
     deleteUser,
+    setNewPassword,
 };
