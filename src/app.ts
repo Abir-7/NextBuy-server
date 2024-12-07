@@ -8,7 +8,7 @@ import router from "./app/routes";
 
 // CORS options
 const corsOptions = {
-  origin: "*",
+  origin: ["*", "https://nextmart-blue.vercel.app"],
   methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
   credentials: true,
   optionsSuccessStatus: 204,

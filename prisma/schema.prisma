@@ -33,7 +33,7 @@ model Customer {
   address    String
   gender     USER_GENDER?
   mobile     Int
-  image      String?
+  image      String?  @default("https://res.cloudinary.com/dgqnr6nsy/image/upload/v1729188702/oe7fgduludfkl7ljvncd.jpg")
   orders     Order[]
   user       User         @relation(fields: [userId], references: [userId])
   followers  Follower[]
@@ -46,7 +46,7 @@ model Vendor {
   vendorId String       @id @unique @default(uuid())
   email    String       @unique
   name     String       @db.VarChar(50)
-  image    String?
+  image    String?    @default("https://res.cloudinary.com/dgqnr6nsy/image/upload/v1728960983/da7a7ftwrice2zyfagxr.jpg")
   address  String
   mobile   Int
   gender   USER_GENDER?
@@ -61,7 +61,7 @@ model Admin {
   adminId String       @id @unique @default(uuid())
   email   String       @unique
   name    String       @db.VarChar(50)
-  image   String?
+  image   String?  @default("https://res.cloudinary.com/dgqnr6nsy/image/upload/v1728995166/rkvw1vahlhr8hh5xx96r.jpg")
   address String
   mobile  String
   gender  USER_GENDER?

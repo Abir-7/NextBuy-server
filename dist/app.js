@@ -12,7 +12,7 @@ const noRoute_1 = __importDefault(require("./app/utils/noRoute"));
 const routes_1 = __importDefault(require("./app/routes"));
 // CORS options
 const corsOptions = {
-    origin: "*",
+    origin: ["*", "https://nextmart-blue.vercel.app"],
     methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
     credentials: true,
     optionsSuccessStatus: 204,
