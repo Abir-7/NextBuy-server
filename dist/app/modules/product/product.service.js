@@ -25,8 +25,15 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ProductService = void 0;
 const prisma_1 = __importDefault(require("../../client/prisma"));
+const AppError_1 = require("../../Error/AppError");
 const paginationHelper_1 = require("../../utils/paginationHelper");
 const addProduct = (data) => __awaiter(void 0, void 0, void 0, function* () {
+    const shopInfo = yield prisma_1.default.shop.findUnique({
+        where: { shopId: data.shopId },
+    });
+    if (shopInfo === null || shopInfo === void 0 ? void 0 : shopInfo.isBlackListed) {
+        throw new AppError_1.AppError(500, "Shop is blacklisted");
+    }
     const result = yield prisma_1.default.product.create({
         data: Object.assign(Object.assign({}, data), { price: Number(data.price), stock: Number(data.stock), discounts: Number(data.discounts) }),
     });
@@ -45,7 +52,7 @@ const cloneProduct = (data) => __awaiter(void 0, void 0, void 0, function* () {
             name: true,
         },
     });
-    // Determine a unique name
+    //Determine a unique name
     let uniqueName = baseName;
     if (similarProducts.length > 0) {
         const nameSet = new Set(similarProducts.map((product) => product.name));
@@ -62,6 +69,7 @@ const cloneProduct = (data) => __awaiter(void 0, void 0, void 0, function* () {
     return result;
 });
 const allProduct = (paginationData, params) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log(params);
     const { page, limit, skip } = paginationHelper_1.paginationHelper.calculatePagination(paginationData);
     const { searchTerm } = params, filterData = __rest(params, ["searchTerm"]);
     let andCondtion = [];
@@ -85,6 +93,9 @@ const allProduct = (paginationData, params) => __awaiter(void 0, void 0, void 0,
             })),
         });
     }
+    andCondtion.push({
+        shop: { isBlackListed: false },
+    });
     const whereConditons = { AND: andCondtion };
     const result = yield prisma_1.default.product.findMany({
         where: whereConditons,
@@ -177,7 +188,7 @@ const flashProduct = () => __awaiter(void 0, void 0, void 0, function* () {
         yield prisma_1.default.flashSale.deleteMany();
         // Fetch a larger number of products to randomize
         const allProducts = yield prisma_1.default.product.findMany({
-            where: { stock: { gt: 0 } },
+            where: { stock: { gt: 0 }, shop: { isBlackListed: false } },
             select: { productId: true }, // Fetch only necessary fields
         });
         // Shuffle the array to pick random products

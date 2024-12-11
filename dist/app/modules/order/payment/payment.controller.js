@@ -181,7 +181,7 @@ exports.paymentConfirm = (0, tryCatch_1.default)((req, res) => __awaiter(void 0,
           <p><strong>Subtotal:</strong> $${orderData.subTotal}</p>
         </div>
          <div class="back-to-home">
-          <a href="/">Back to Home</a>
+          <a href="https://nextmart-blue.vercel.app">Back to Home</a>
         </div>
       </div>
     </body>

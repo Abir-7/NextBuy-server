@@ -32,6 +32,7 @@ const createShop = (data, user) => __awaiter(void 0, void 0, void 0, function* (
 const getAllVendorShop = (paginationData) => __awaiter(void 0, void 0, void 0, function* () {
     const { page, limit, skip } = paginationHelper_1.paginationHelper.calculatePagination(paginationData);
     const result = yield prisma_1.default.shop.findMany({
+        where: { isBlackListed: false },
         include: { vendor: true, followers: true },
         skip: skip,
         take: limit,

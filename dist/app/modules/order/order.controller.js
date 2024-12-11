@@ -19,6 +19,7 @@ const order_service_1 = require("./order.service");
 const PickValidField_1 = require("../../utils/PickValidField");
 const orderProduct = (0, tryCatch_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield order_service_1.OrderService.createOrderIntoDB(req.body, req.user);
+    console.log(result, "gggg");
     (0, sendResponse_1.default)(res, {
         data: result,
         statusCode: 200,
@@ -28,7 +29,8 @@ const orderProduct = (0, tryCatch_1.default)((req, res) => __awaiter(void 0, voi
 }));
 const getSingleCustomerAllOrder = (0, tryCatch_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const paginationData = (0, PickValidField_1.pickField)(req.query, ["page", "limit", "sort"]);
-    const result = yield order_service_1.OrderService.getSingleCustomerAllOrder(req.user, paginationData);
+    const filter = (0, PickValidField_1.pickField)(req.query, ["status"]);
+    const result = yield order_service_1.OrderService.getSingleCustomerAllOrder(req.user, paginationData, filter);
     (0, sendResponse_1.default)(res, {
         data: result.data,
         meta: result.meta,
@@ -79,8 +81,10 @@ const getPendingOrder = (0, tryCatch_1.default)((req, res) => __awaiter(void 0, 
     });
 }));
 const getSpeceficShopOrder = (0, tryCatch_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const userData = req.user;
     const paginationData = (0, PickValidField_1.pickField)(req.query, ["page", "limit", "sort"]);
-    const result = yield order_service_1.OrderService.getSpecificShopOrder(req.params.id, paginationData);
+    const filter = (0, PickValidField_1.pickField)(req.query, ["status"]);
+    const result = yield order_service_1.OrderService.getSpecificShopOrder(userData, paginationData, filter);
     (0, sendResponse_1.default)(res, {
         data: result.data,
         meta: result.meta,

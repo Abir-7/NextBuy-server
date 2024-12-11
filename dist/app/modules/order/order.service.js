@@ -8,6 +8,17 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __rest = (this && this.__rest) || function (s, e) {
+    var t = {};
+    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
+        t[p] = s[p];
+    if (s != null && typeof Object.getOwnPropertySymbols === "function")
+        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
+            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
+                t[p[i]] = s[p[i]];
+        }
+    return t;
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -55,17 +66,31 @@ const createOrderIntoDB = (orderInfo, userData) => __awaiter(void 0, void 0, voi
     });
     return Object.assign(Object.assign({}, orderData), { payLink: paymentInfo.data.payment_url });
 });
-const getSingleCustomerAllOrder = (userInfo, paginationData) => __awaiter(void 0, void 0, void 0, function* () {
+const getSingleCustomerAllOrder = (userInfo, paginationData, params) => __awaiter(void 0, void 0, void 0, function* () {
     const { page, limit, skip } = paginationHelper_1.paginationHelper.calculatePagination(paginationData);
     const userData = yield prisma_1.default.customer.findUnique({
         where: {
             email: userInfo.userEmail,
         },
     });
+    const { searchTerm } = params, filterData = __rest(params, ["searchTerm"]);
+    let andCondtion = [];
+    if (Object.keys(filterData).length > 0) {
+        andCondtion.push({
+            AND: Object.keys(filterData)
+                .filter((field) => Boolean(filterData[field])) // Exclude all falsy values
+                .map((field) => ({
+                [field]: {
+                    equals: filterData[field],
+                    // mode: "insensitive", // Uncomment if needed for case-insensitive search
+                },
+            })),
+        });
+    }
+    andCondtion.push({ AND: [{ customerId: userData === null || userData === void 0 ? void 0 : userData.customerId }] });
+    const whereConditons = { AND: andCondtion };
     const result = yield prisma_1.default.order.findMany({
-        where: {
-            customerId: userData === null || userData === void 0 ? void 0 : userData.customerId,
-        },
+        where: whereConditons,
         include: { items: { include: { product: true } } },
         skip: skip,
         take: limit,
@@ -168,16 +193,40 @@ const updateOrder = (id) => __awaiter(void 0, void 0, void 0, function* () {
     });
     return result;
 });
-const getSpecificShopOrder = (id, paginationData) => __awaiter(void 0, void 0, void 0, function* () {
+const getSpecificShopOrder = (userData, paginationData, params) => __awaiter(void 0, void 0, void 0, function* () {
+    const vendor = yield prisma_1.default.vendor.findUniqueOrThrow({
+        where: { email: userData.userEmail },
+    });
     const { page, limit, skip } = paginationHelper_1.paginationHelper.calculatePagination(paginationData);
-    const orders = yield prisma_1.default.order.findMany({
-        where: {
-            items: {
-                some: {
-                    shopId: id, // Replace 'your-shop-id' with the desired shop ID
+    const { searchTerm } = params, filterData = __rest(params, ["searchTerm"]);
+    let andCondtion = [];
+    if (Object.keys(filterData).length > 0) {
+        andCondtion.push({
+            AND: Object.keys(filterData)
+                .filter((field) => Boolean(filterData[field])) // Exclude all falsy values
+                .map((field) => ({
+                [field]: {
+                    equals: filterData[field],
+                    // mode: "insensitive", // Uncomment if needed for case-insensitive search
+                },
+            })),
+        });
+    }
+    andCondtion.push({
+        AND: [
+            {
+                items: {
+                    some: {
+                        shop: { vendorId: vendor.vendorId }, // Replace 'your-shop-id' with the desired shop ID
+                    },
                 },
             },
-        },
+        ],
+    });
+    console.dir(andCondtion, { depth: null });
+    const whereConditons = { AND: andCondtion };
+    const orders = yield prisma_1.default.order.findMany({
+        where: whereConditons,
         include: {
             items: { include: { product: true } }, // Include order items if needed
             customer: true, // Include customer details if needed
@@ -194,13 +243,7 @@ const getSpecificShopOrder = (id, paginationData) => __awaiter(void 0, void 0, v
     });
     console.log(skip);
     const total = yield prisma_1.default.order.count({
-        where: {
-            items: {
-                some: {
-                    shopId: id, // Replace 'your-shop-id' with the desired shop ID
-                },
-            },
-        },
+        where: whereConditons,
     });
     return {
         meta: { page, limit, total, totalPage: Math.ceil(total / limit) },
