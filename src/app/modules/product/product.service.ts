@@ -5,8 +5,17 @@ import { IProduct, IUpdateProduct } from "./product.interface";
 import { paginationHelper } from "../../utils/paginationHelper";
 import { IPaginationOptions } from "../../interface/pagination.interface";
 import { Prisma } from "@prisma/client";
+import { error } from "console";
 
 const addProduct = async (data: IProduct) => {
+  const shopInfo = await prisma.shop.findUnique({
+    where: { shopId: data.shopId },
+  });
+
+  if (shopInfo?.isBlackListed) {
+    throw new AppError(500, "Shop is blacklisted");
+  }
+
   const result = await prisma.product.create({
     data: {
       ...data,
@@ -34,7 +43,7 @@ const cloneProduct = async (data: IProduct) => {
     },
   });
 
-  // Determine a unique name
+  //Determine a unique name
   let uniqueName = baseName;
   if (similarProducts.length > 0) {
     const nameSet = new Set(similarProducts.map((product) => product.name));
@@ -64,6 +73,7 @@ const allProduct = async (
   paginationData: IPaginationOptions,
   params: Record<string, unknown>
 ) => {
+  console.log(params);
   const { page, limit, skip } =
     paginationHelper.calculatePagination(paginationData);
 
@@ -90,6 +100,9 @@ const allProduct = async (
       })),
     });
   }
+  andCondtion.push({
+    shop: { isBlackListed: false },
+  });
   const whereConditons: Prisma.ProductWhereInput = { AND: andCondtion };
 
   const result = await prisma.product.findMany({
@@ -220,7 +233,7 @@ const flashProduct = async () => {
 
     // Fetch a larger number of products to randomize
     const allProducts = await prisma.product.findMany({
-      where: { stock: { gt: 0 } },
+      where: { stock: { gt: 0 }, shop: { isBlackListed: false } },
       select: { productId: true }, // Fetch only necessary fields
     });
 

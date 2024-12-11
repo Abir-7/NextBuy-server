@@ -9,6 +9,8 @@ const orderProduct = catchAsync(async (req, res) => {
     req.body,
     req.user as JwtPayload & { role: string; userEmail: string }
   );
+
+  console.log(result, "gggg");
   sendResponse(res, {
     data: result,
     statusCode: 200,
@@ -18,10 +20,11 @@ const orderProduct = catchAsync(async (req, res) => {
 });
 const getSingleCustomerAllOrder = catchAsync(async (req, res) => {
   const paginationData = pickField(req.query, ["page", "limit", "sort"]);
-
+  const filter = pickField(req.query, ["status"]);
   const result = await OrderService.getSingleCustomerAllOrder(
     req.user as JwtPayload & { role: string; userEmail: string },
-    paginationData
+    paginationData,
+    filter
   );
 
   sendResponse(res, {
@@ -79,10 +82,15 @@ const getPendingOrder = catchAsync(async (req, res) => {
 });
 
 const getSpeceficShopOrder = catchAsync(async (req, res) => {
+  const userData = req.user;
   const paginationData = pickField(req.query, ["page", "limit", "sort"]);
+
+  const filter = pickField(req.query, ["status"]);
+
   const result = await OrderService.getSpecificShopOrder(
-    req.params.id,
-    paginationData
+    userData as JwtPayload & { userEmail: string; role: string },
+    paginationData,
+    filter
   );
   sendResponse(res, {
     data: result.data,

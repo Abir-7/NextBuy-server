@@ -6,7 +6,7 @@ import { IOrderRequest } from "./order.interface";
 import { v4 as uuidv4 } from "uuid";
 import { IPaginationOptions } from "../../interface/pagination.interface";
 import { paginationHelper } from "../../utils/paginationHelper";
-import { ORDER_STATUS } from "@prisma/client";
+import { ORDER_STATUS, Prisma } from "@prisma/client";
 const createOrderIntoDB = async (
   orderInfo: IOrderRequest,
   userData: JwtPayload & { role: string; userEmail: string }
@@ -55,7 +55,8 @@ const createOrderIntoDB = async (
 
 const getSingleCustomerAllOrder = async (
   userInfo: JwtPayload & { userEmail: string; role: string },
-  paginationData: IPaginationOptions
+  paginationData: IPaginationOptions,
+  params: Record<string, unknown>
 ) => {
   const { page, limit, skip } =
     paginationHelper.calculatePagination(paginationData);
@@ -65,10 +66,27 @@ const getSingleCustomerAllOrder = async (
       email: userInfo.userEmail,
     },
   });
+
+  const { searchTerm, ...filterData } = params;
+  let andCondtion: Prisma.OrderWhereInput[] = [];
+  if (Object.keys(filterData).length > 0) {
+    andCondtion.push({
+      AND: Object.keys(filterData)
+        .filter((field) => Boolean(filterData[field])) // Exclude all falsy values
+        .map((field) => ({
+          [field]: {
+            equals: filterData[field],
+            // mode: "insensitive", // Uncomment if needed for case-insensitive search
+          },
+        })),
+    });
+  }
+
+  andCondtion.push({ AND: [{ customerId: userData?.customerId }] });
+  const whereConditons: Prisma.OrderWhereInput = { AND: andCondtion };
+
   const result = await prisma.order.findMany({
-    where: {
-      customerId: userData?.customerId,
-    },
+    where: whereConditons,
     include: { items: { include: { product: true } } },
     skip: skip,
     take: limit,
@@ -191,19 +209,47 @@ const updateOrder = async (id: string) => {
 };
 
 const getSpecificShopOrder = async (
-  id: string,
-  paginationData: IPaginationOptions
+  userData: JwtPayload & { userEmail: string; role: string },
+  paginationData: IPaginationOptions,
+  params: Record<string, unknown>
 ) => {
+  const vendor = await prisma.vendor.findUniqueOrThrow({
+    where: { email: userData.userEmail },
+  });
   const { page, limit, skip } =
     paginationHelper.calculatePagination(paginationData);
-  const orders = await prisma.order.findMany({
-    where: {
-      items: {
-        some: {
-          shopId: id, // Replace 'your-shop-id' with the desired shop ID
+
+  const { searchTerm, ...filterData } = params;
+  let andCondtion: Prisma.OrderWhereInput[] = [];
+  if (Object.keys(filterData).length > 0) {
+    andCondtion.push({
+      AND: Object.keys(filterData)
+        .filter((field) => Boolean(filterData[field])) // Exclude all falsy values
+        .map((field) => ({
+          [field]: {
+            equals: filterData[field],
+            // mode: "insensitive", // Uncomment if needed for case-insensitive search
+          },
+        })),
+    });
+  }
+  andCondtion.push({
+    AND: [
+      {
+        items: {
+          some: {
+            shop: { vendorId: vendor.vendorId }, // Replace 'your-shop-id' with the desired shop ID
+          },
         },
       },
-    },
+    ],
+  });
+
+  console.dir(andCondtion, { depth: null });
+
+  const whereConditons: Prisma.OrderWhereInput = { AND: andCondtion };
+  const orders = await prisma.order.findMany({
+    where: whereConditons,
     include: {
       items: { include: { product: true } }, // Include order items if needed
       customer: true, // Include customer details if needed
@@ -219,15 +265,10 @@ const getSpecificShopOrder = async (
           createdAt: "desc",
         },
   });
+
   console.log(skip);
   const total = await prisma.order.count({
-    where: {
-      items: {
-        some: {
-          shopId: id, // Replace 'your-shop-id' with the desired shop ID
-        },
-      },
-    },
+    where: whereConditons,
   });
 
   return {

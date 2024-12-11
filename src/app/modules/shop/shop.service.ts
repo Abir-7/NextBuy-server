@@ -29,6 +29,7 @@ const getAllVendorShop = async (paginationData: IPaginationOptions) => {
   const { page, limit, skip } =
     paginationHelper.calculatePagination(paginationData);
   const result = await prisma.shop.findMany({
+    where: { isBlackListed: false },
     include: { vendor: true, followers: true },
     skip: skip,
     take: limit,

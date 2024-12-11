@@ -22,11 +22,7 @@ router.get(
   auth("ADMIN", "SUPERADMIN"),
   OrderController.getPendingOrder
 );
-router.get(
-  "/shop-order/:id",
-  auth("VENDOR"),
-  OrderController.getSpeceficShopOrder
-);
+router.get("/shop-order", auth("VENDOR"), OrderController.getSpeceficShopOrder);
 
 router.post("/make-payment", auth("CUSTOMER"), OrderController.orderProduct);
 

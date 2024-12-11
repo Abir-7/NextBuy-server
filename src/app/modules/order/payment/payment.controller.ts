@@ -176,7 +176,7 @@ export const paymentConfirm = catchAsync(async (req, res): Promise<void> => {
           <p><strong>Subtotal:</strong> $${orderData.subTotal}</p>
         </div>
          <div class="back-to-home">
-          <a href="/">Back to Home</a>
+          <a href="https://nextmart-blue.vercel.app">Back to Home</a>
         </div>
       </div>
     </body>
