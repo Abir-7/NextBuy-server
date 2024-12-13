@@ -28,8 +28,9 @@ const createShop = (0, tryCatch_1.default)((req, res) => __awaiter(void 0, void 
 }));
 //for user
 const getAllVendorShop = (0, tryCatch_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const params = (0, PickValidField_1.pickField)(req.query, ["searchTerm"]);
     const paginationData = (0, PickValidField_1.pickField)(req.query, ["page", "limit", "sort"]);
-    const result = yield shop_service_1.ShopService.getAllVendorShop(paginationData);
+    const result = yield shop_service_1.ShopService.getAllVendorShop(paginationData, params);
     (0, sendResponse_1.default)(res, {
         success: true,
         statusCode: 200,
@@ -40,12 +41,15 @@ const getAllVendorShop = (0, tryCatch_1.default)((req, res) => __awaiter(void 0,
 }));
 const getSingleVendorShop = (0, tryCatch_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
-    const result = yield shop_service_1.ShopService.getSingleVendorShop((_a = req.params) === null || _a === void 0 ? void 0 : _a.id);
+    const paginationData = (0, PickValidField_1.pickField)(req.query, ["page", "limit", "sort"]);
+    //const params = pickField(req.query, ["searchTerm"]);
+    const result = yield shop_service_1.ShopService.getSingleVendorShop((_a = req.params) === null || _a === void 0 ? void 0 : _a.id, paginationData);
     (0, sendResponse_1.default)(res, {
+        meta: result.meta,
         success: true,
         statusCode: 200,
         message: "Shop is fetched Successfully",
-        data: result,
+        data: result.result,
     });
 }));
 //for vendor
@@ -59,13 +63,15 @@ const getVendorShop = (0, tryCatch_1.default)((req, res) => __awaiter(void 0, vo
     });
 }));
 const getVendorSingleShop = (0, tryCatch_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const paginationData = (0, PickValidField_1.pickField)(req.query, ["page", "limit", "sort"]);
     const { id } = req.params;
-    const result = yield shop_service_1.ShopService.getVendorSingleShop(req.user, id);
+    const result = yield shop_service_1.ShopService.getVendorSingleShop(req.user, id, paginationData);
     (0, sendResponse_1.default)(res, {
+        meta: result.meta,
         success: true,
         statusCode: 200,
         message: "Shop data is fetched Successfully",
-        data: result,
+        data: result.result,
     });
 }));
 const blockShop = (0, tryCatch_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {

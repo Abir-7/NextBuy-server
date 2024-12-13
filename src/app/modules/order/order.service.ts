@@ -11,16 +11,38 @@ const createOrderIntoDB = async (
   orderInfo: IOrderRequest,
   userData: JwtPayload & { role: string; userEmail: string }
 ) => {
+  // Fetch customer data using the user's email
   const customerData = await prisma.customer.findUnique({
     where: { email: userData.userEmail },
   });
 
   if (!customerData) {
-    throw new AppError(404, "Faild payment");
+    throw new AppError(404, "Customer not found for payment");
+  }
+
+  // Fetch blacklisted shops
+  const blacklistedShops = await prisma.shop.findMany({
+    where: { isBlackListed: true },
+    select: { shopId: true }, // Only retrieve shop IDs
+  });
+
+  const blacklistedShopIds = blacklistedShops.map((shop) => shop.shopId);
+
+  // Check if any shop in the order items is blacklisted
+  const blacklistedInOrder = orderInfo.items.find((item) =>
+    blacklistedShopIds.includes(item.shopId)
+  );
+
+  if (blacklistedInOrder) {
+    throw new AppError(
+      400,
+      `Order cannot be placed as shop ${blacklistedInOrder.shopId} is blacklisted.`
+    );
   }
 
   const txn = uuidv4();
 
+  // Create the order in the database
   const orderData = await prisma.order.create({
     data: {
       couponId: orderInfo.couponId,
@@ -43,6 +65,7 @@ const createOrderIntoDB = async (
     },
   });
 
+  // Initiate payment process
   const paymentInfo = await initiatePayment({
     orderData: orderData.subTotal,
     txn,
@@ -245,8 +268,6 @@ const getSpecificShopOrder = async (
     ],
   });
 
-  console.dir(andCondtion, { depth: null });
-
   const whereConditons: Prisma.OrderWhereInput = { AND: andCondtion };
   const orders = await prisma.order.findMany({
     where: whereConditons,
@@ -266,7 +287,6 @@ const getSpecificShopOrder = async (
         },
   });
 
-  console.log(skip);
   const total = await prisma.order.count({
     where: whereConditons,
   });

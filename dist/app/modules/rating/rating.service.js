@@ -50,7 +50,6 @@ const getUserReviewByShop = (userData, paginationData) => __awaiter(void 0, void
                 createdAt: "desc",
             },
     });
-    console.log(skip);
     const total = yield prisma_1.default.review.count({
         where: {
             orderItem: {

@@ -6,6 +6,7 @@ import { IPaginationOptions } from "../../interface/pagination.interface";
 import { paginationHelper } from "../../utils/paginationHelper";
 import { Prisma } from "@prisma/client";
 import { AppError } from "../../Error/AppError";
+import { JwtPayload } from "jsonwebtoken";
 const createUser = async (data: ICreateUser) => {
   const { address, email, password, mobile, name, accountType } = data;
 
@@ -183,10 +184,28 @@ const setUserNewPassword = async (token: string, password: string) => {
   return result;
 };
 
+const changePassword = async (
+  userData: JwtPayload & { userEmail: string; role: string },
+  password: { password: string }
+) => {
+  const hashedPassword = await bcrypt.hash(
+    password.password,
+    Number(config.saltRounds)
+  );
+
+  const result = await prisma.user.update({
+    where: { email: userData.userEmail },
+    data: { password: hashedPassword },
+  });
+  console.log(result);
+  return result;
+};
+
 export const UserService = {
   createUser,
   setUserNewPassword,
   getAllUser,
   userBlock,
   userDelete,
+  changePassword,
 };

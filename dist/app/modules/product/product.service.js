@@ -69,7 +69,6 @@ const cloneProduct = (data) => __awaiter(void 0, void 0, void 0, function* () {
     return result;
 });
 const allProduct = (paginationData, params) => __awaiter(void 0, void 0, void 0, function* () {
-    console.log(params);
     const { page, limit, skip } = paginationHelper_1.paginationHelper.calculatePagination(paginationData);
     const { searchTerm } = params, filterData = __rest(params, ["searchTerm"]);
     let andCondtion = [];

@@ -1,3 +1,4 @@
+import { JwtPayload } from "jsonwebtoken";
 import { pickField } from "../../utils/PickValidField";
 import sendResponse from "../../utils/sendResponse";
 import catchAsync from "../../utils/tryCatch";
@@ -58,13 +59,27 @@ const setNewPassword = catchAsync(async (req, res) => {
     data: result,
     statusCode: 200,
     success: true,
+    message: "Password reset Successfully",
+  });
+});
+const changePassword = catchAsync(async (req, res) => {
+  const data = req.body;
+  const userData = req.user as JwtPayload & { userEmail: string; role: string };
+  const result = await UserService.changePassword(userData, data);
+
+  sendResponse(res, {
+    data: result,
+    statusCode: 200,
+    success: true,
     message: "Password Updated Successfully",
   });
 });
+
 export const UserController = {
   createUser,
   getAllUser,
   blockUser,
   deleteUser,
   setNewPassword,
+  changePassword,
 };

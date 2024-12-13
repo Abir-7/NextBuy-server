@@ -63,6 +63,17 @@ const setNewPassword = (0, tryCatch_1.default)((req, res) => __awaiter(void 0, v
         data: result,
         statusCode: 200,
         success: true,
+        message: "Password reset Successfully",
+    });
+}));
+const changePassword = (0, tryCatch_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const data = req.body;
+    const userData = req.user;
+    const result = yield user_service_1.UserService.changePassword(userData, data);
+    (0, sendResponse_1.default)(res, {
+        data: result,
+        statusCode: 200,
+        success: true,
         message: "Password Updated Successfully",
     });
 }));
@@ -72,4 +83,5 @@ exports.UserController = {
     blockUser,
     deleteUser,
     setNewPassword,
+    changePassword,
 };

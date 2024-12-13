@@ -12,6 +12,11 @@ router.patch(
 );
 router.patch("/set-pass", UserController.setNewPassword);
 router.patch(
+  "/update-pass",
+  auth("CUSTOMER", "VENDOR"),
+  UserController.changePassword
+);
+router.patch(
   "/delete/:id",
   auth("SUPERADMIN", "ADMIN"),
   UserController.deleteUser

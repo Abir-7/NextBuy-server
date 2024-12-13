@@ -73,7 +73,6 @@ const allProduct = async (
   paginationData: IPaginationOptions,
   params: Record<string, unknown>
 ) => {
-  console.log(params);
   const { page, limit, skip } =
     paginationHelper.calculatePagination(paginationData);
 

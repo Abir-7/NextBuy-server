@@ -15,11 +15,8 @@ const getUserDashboard = catchAsync(async (req, res) => {
 });
 
 const getAdminDashboard = catchAsync(async (req, res) => {
-  console.log("ggg");
-
   const result = await DashboardService.getAdminDashboard();
 
-  console.log(result);
   sendResponse(res, {
     success: true,
     statusCode: 200,

@@ -9,5 +9,6 @@ router.post("/create-user", user_controller_1.UserController.createUser);
 router.get("/", (0, auth_1.auth)("SUPERADMIN"), user_controller_1.UserController.getAllUser);
 router.patch("/block/:id", (0, auth_1.auth)("SUPERADMIN", "ADMIN"), user_controller_1.UserController.blockUser);
 router.patch("/set-pass", user_controller_1.UserController.setNewPassword);
+router.patch("/update-pass", (0, auth_1.auth)("CUSTOMER", "VENDOR"), user_controller_1.UserController.changePassword);
 router.patch("/delete/:id", (0, auth_1.auth)("SUPERADMIN", "ADMIN"), user_controller_1.UserController.deleteUser);
 exports.UserRouter = router;

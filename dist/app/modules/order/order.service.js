@@ -30,13 +30,26 @@ const payment_utils_1 = require("./payment/payment.utils");
 const uuid_1 = require("uuid");
 const paginationHelper_1 = require("../../utils/paginationHelper");
 const createOrderIntoDB = (orderInfo, userData) => __awaiter(void 0, void 0, void 0, function* () {
+    // Fetch customer data using the user's email
     const customerData = yield prisma_1.default.customer.findUnique({
         where: { email: userData.userEmail },
     });
     if (!customerData) {
-        throw new AppError_1.AppError(404, "Faild payment");
+        throw new AppError_1.AppError(404, "Customer not found for payment");
+    }
+    // Fetch blacklisted shops
+    const blacklistedShops = yield prisma_1.default.shop.findMany({
+        where: { isBlackListed: true },
+        select: { shopId: true }, // Only retrieve shop IDs
+    });
+    const blacklistedShopIds = blacklistedShops.map((shop) => shop.shopId);
+    // Check if any shop in the order items is blacklisted
+    const blacklistedInOrder = orderInfo.items.find((item) => blacklistedShopIds.includes(item.shopId));
+    if (blacklistedInOrder) {
+        throw new AppError_1.AppError(400, `Order cannot be placed as shop ${blacklistedInOrder.shopId} is blacklisted.`);
     }
     const txn = (0, uuid_1.v4)();
+    // Create the order in the database
     const orderData = yield prisma_1.default.order.create({
         data: {
             couponId: orderInfo.couponId,
@@ -58,6 +71,7 @@ const createOrderIntoDB = (orderInfo, userData) => __awaiter(void 0, void 0, voi
             },
         },
     });
+    // Initiate payment process
     const paymentInfo = yield (0, payment_utils_1.initiatePayment)({
         orderData: orderData.subTotal,
         txn,
@@ -223,7 +237,6 @@ const getSpecificShopOrder = (userData, paginationData, params) => __awaiter(voi
             },
         ],
     });
-    console.dir(andCondtion, { depth: null });
     const whereConditons = { AND: andCondtion };
     const orders = yield prisma_1.default.order.findMany({
         where: whereConditons,
@@ -241,7 +254,6 @@ const getSpecificShopOrder = (userData, paginationData, params) => __awaiter(voi
                 createdAt: "desc",
             },
     });
-    console.log(skip);
     const total = yield prisma_1.default.order.count({
         where: whereConditons,
     });

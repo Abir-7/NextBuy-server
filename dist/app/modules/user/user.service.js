@@ -175,10 +175,20 @@ const setUserNewPassword = (token, password) => __awaiter(void 0, void 0, void 0
     });
     return result;
 });
+const changePassword = (userData, password) => __awaiter(void 0, void 0, void 0, function* () {
+    const hashedPassword = yield bcrypt_1.default.hash(password.password, Number(config_1.config.saltRounds));
+    const result = yield prisma_1.default.user.update({
+        where: { email: userData.userEmail },
+        data: { password: hashedPassword },
+    });
+    console.log(result);
+    return result;
+});
 exports.UserService = {
     createUser,
     setUserNewPassword,
     getAllUser,
     userBlock,
     userDelete,
+    changePassword,
 };

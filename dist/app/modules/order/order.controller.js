@@ -19,7 +19,6 @@ const order_service_1 = require("./order.service");
 const PickValidField_1 = require("../../utils/PickValidField");
 const orderProduct = (0, tryCatch_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield order_service_1.OrderService.createOrderIntoDB(req.body, req.user);
-    console.log(result, "gggg");
     (0, sendResponse_1.default)(res, {
         data: result,
         statusCode: 200,

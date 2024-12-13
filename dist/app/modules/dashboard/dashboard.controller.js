@@ -27,9 +27,7 @@ const getUserDashboard = (0, tryCatch_1.default)((req, res) => __awaiter(void 0,
     });
 }));
 const getAdminDashboard = (0, tryCatch_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    console.log("ggg");
     const result = yield dashboard_service_1.DashboardService.getAdminDashboard();
-    console.log(result);
     (0, sendResponse_1.default)(res, {
         success: true,
         statusCode: 200,

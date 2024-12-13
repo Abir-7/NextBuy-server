@@ -3,6 +3,7 @@ import prisma from "../../client/prisma";
 import { AppError } from "../../Error/AppError";
 import { tokenGenerator } from "../../utils/jsonTokenGenerator";
 import { sendMail } from "../../utils/nodeMailer";
+import { JwtPayload } from "jsonwebtoken";
 
 const userLogin = async (data: { email: string; password: string }) => {
   const user = await prisma.user.findUnique({

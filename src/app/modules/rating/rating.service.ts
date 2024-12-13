@@ -50,7 +50,7 @@ const getUserReviewByShop = async (
           createdAt: "desc",
         },
   });
-  console.log(skip);
+
   const total = await prisma.review.count({
     where: {
       orderItem: {
