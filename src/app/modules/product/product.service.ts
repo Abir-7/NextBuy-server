@@ -171,7 +171,11 @@ const singleProduct = async (id: string) => {
   });
 
   const relatedProduct = await prisma.product.findMany({
-    where: { categoryId: result?.categoryId, name: { not: result?.name } },
+    where: {
+      categoryId: result?.categoryId,
+      name: { not: result?.name },
+      shop: { isBlackListed: false },
+    },
   });
   const randomProducts = relatedProduct
     .sort(() => Math.random() - 0.5) // Shuffle array

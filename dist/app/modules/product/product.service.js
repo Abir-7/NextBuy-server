@@ -150,7 +150,11 @@ const singleProduct = (id) => __awaiter(void 0, void 0, void 0, function* () {
         _count: true,
     });
     const relatedProduct = yield prisma_1.default.product.findMany({
-        where: { categoryId: result === null || result === void 0 ? void 0 : result.categoryId, name: { not: result === null || result === void 0 ? void 0 : result.name } },
+        where: {
+            categoryId: result === null || result === void 0 ? void 0 : result.categoryId,
+            name: { not: result === null || result === void 0 ? void 0 : result.name },
+            shop: { isBlackListed: false },
+        },
     });
     const randomProducts = relatedProduct
         .sort(() => Math.random() - 0.5) // Shuffle array
