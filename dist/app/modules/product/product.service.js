@@ -96,6 +96,7 @@ const allProduct = (paginationData, params) => __awaiter(void 0, void 0, void 0,
         shop: { isBlackListed: false },
     });
     const whereConditons = { AND: andCondtion };
+    console.log(andCondtion, paginationData);
     const result = yield prisma_1.default.product.findMany({
         where: whereConditons,
         include: {

@@ -27,6 +27,7 @@ const cloneProduct = catchAsync(async (req, res) => {
 });
 
 const allProduct = catchAsync(async (req, res) => {
+  console.log("object");
   const paginationData = pickField(req.query, ["page", "limit", "sort"]);
 
   const filter = pickField(req.query, ["searchTerm", "categoryId"]);

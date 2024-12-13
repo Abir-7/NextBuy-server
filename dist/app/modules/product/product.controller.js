@@ -36,6 +36,7 @@ const cloneProduct = (0, tryCatch_1.default)((req, res) => __awaiter(void 0, voi
     });
 }));
 const allProduct = (0, tryCatch_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log("object");
     const paginationData = (0, PickValidField_1.pickField)(req.query, ["page", "limit", "sort"]);
     const filter = (0, PickValidField_1.pickField)(req.query, ["searchTerm", "categoryId"]);
     const result = yield product_service_1.ProductService.allProduct(paginationData, filter);

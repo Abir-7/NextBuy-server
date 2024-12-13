@@ -28,6 +28,12 @@ const userLogin = (data) => __awaiter(void 0, void 0, void 0, function* () {
     if (!(yield bcrypt_1.default.compare(data.password, user.password))) {
         throw new AppError_1.AppError(404, "Check your password");
     }
+    if (user.isBlocked) {
+        throw new AppError_1.AppError(404, "User blocked");
+    }
+    if (user.isDeleted) {
+        throw new AppError_1.AppError(404, "User deleted");
+    }
     const token = (0, jsonTokenGenerator_1.tokenGenerator)({ userEmail: user.email, role: user.role });
     if (!token) {
         throw new AppError_1.AppError(404, "Something Went Wrong!! Try again.");

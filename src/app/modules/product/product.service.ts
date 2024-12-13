@@ -104,6 +104,8 @@ const allProduct = async (
   });
   const whereConditons: Prisma.ProductWhereInput = { AND: andCondtion };
 
+  console.log(andCondtion, paginationData);
+
   const result = await prisma.product.findMany({
     where: whereConditons,
     include: {

@@ -18,6 +18,13 @@ const userLogin = async (data: { email: string; password: string }) => {
     throw new AppError(404, "Check your password");
   }
 
+  if (user.isBlocked) {
+    throw new AppError(404, "User blocked");
+  }
+  if (user.isDeleted) {
+    throw new AppError(404, "User deleted");
+  }
+
   const token = tokenGenerator({ userEmail: user.email, role: user.role });
 
   if (!token) {

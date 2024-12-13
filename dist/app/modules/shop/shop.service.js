@@ -123,6 +123,7 @@ const getVendorSingleShop = (user, id, paginationData) => __awaiter(void 0, void
     const result = yield prisma_1.default.shop.findFirst({
         where: { shopId: id, vendorId: data.vendorId },
         include: {
+            followers: true,
             products: {
                 include: { category: true },
                 skip: skip,

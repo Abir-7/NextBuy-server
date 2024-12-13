@@ -149,6 +149,7 @@ const getVendorSingleShop = async (
   const result = await prisma.shop.findFirst({
     where: { shopId: id, vendorId: data.vendorId },
     include: {
+      followers: true,
       products: {
         include: { category: true },
         skip: skip,
