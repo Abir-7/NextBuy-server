@@ -136,9 +136,17 @@ const getSingleOrder = async (id: string) => {
     where: {
       id,
     },
-    include: { items: { include: { product: true, shop: true } } },
+    include: {
+      items: {
+        include: {
+          product: true,
+          shop: true,
+          Review: { include: { customer: true } },
+        },
+      },
+    },
   });
-
+  console.dir(result, { depth: "infinity" });
   return result;
 };
 

@@ -127,8 +127,17 @@ const getSingleOrder = (id) => __awaiter(void 0, void 0, void 0, function* () {
         where: {
             id,
         },
-        include: { items: { include: { product: true, shop: true } } },
+        include: {
+            items: {
+                include: {
+                    product: true,
+                    shop: true,
+                    Review: { include: { customer: true } },
+                },
+            },
+        },
     });
+    console.dir(result, { depth: "infinity" });
     return result;
 });
 const getAllOrder = (paginationData) => __awaiter(void 0, void 0, void 0, function* () {
