@@ -7,7 +7,7 @@ export const initiatePayment = async (data: any) => {
     store_id: config.Store_ID,
     signature_key: config.Signature_Key,
     tran_id: data?.txn,
-    success_url: `http://localhost:3500/api/v1/payment/confirmation?id=${data.orderId}`,
+    success_url: `https://nextmartserver.vercel.app/api/v1/payment/confirmation?id=${data.orderId}`,
     fail_url: "http://www.merchantdomain.com/failedpage.html",
     cancel_url: "http://www.merchantdomain.com/cancellpage.html",
     amount: data.orderData,

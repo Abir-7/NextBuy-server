@@ -21,7 +21,7 @@ const initiatePayment = (data) => __awaiter(void 0, void 0, void 0, function* ()
         store_id: config_1.config.Store_ID,
         signature_key: config_1.config.Signature_Key,
         tran_id: data === null || data === void 0 ? void 0 : data.txn,
-        success_url: `http://localhost:3500/api/v1/payment/confirmation?id=${data.orderId}`,
+        success_url: `https://nextmartserver.vercel.app/api/v1/payment/confirmation?id=${data.orderId}`,
         fail_url: "http://www.merchantdomain.com/failedpage.html",
         cancel_url: "http://www.merchantdomain.com/cancellpage.html",
         amount: data.orderData,
