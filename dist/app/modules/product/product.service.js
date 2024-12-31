@@ -96,7 +96,6 @@ const allProduct = (paginationData, params) => __awaiter(void 0, void 0, void 0,
         shop: { isBlackListed: false },
     });
     const whereConditons = { AND: andCondtion };
-    console.log(andCondtion, paginationData);
     const result = yield prisma_1.default.product.findMany({
         where: whereConditons,
         include: {
@@ -220,6 +219,34 @@ const flashProduct = () => __awaiter(void 0, void 0, void 0, function* () {
         return result;
     }
 });
+const searchProduct = (text) => __awaiter(void 0, void 0, void 0, function* () {
+    // Check if text is empty or contains only whitespace
+    if (!text.trim()) {
+        console.log("Search text is empty.");
+        return []; // Return an empty array
+    }
+    console.log(text, "ds");
+    const product = yield prisma_1.default.product.findMany({
+        where: {
+            OR: [
+                {
+                    name: {
+                        contains: text,
+                        mode: "insensitive",
+                    },
+                },
+                {
+                    description: {
+                        contains: text,
+                        mode: "insensitive",
+                    },
+                },
+            ],
+        },
+    });
+    console.log(product);
+    return product;
+});
 exports.ProductService = {
     addProduct,
     updateProduct,
@@ -228,4 +255,5 @@ exports.ProductService = {
     singleProduct,
     flashProduct,
     cloneProduct,
+    searchProduct,
 };

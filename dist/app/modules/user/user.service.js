@@ -181,7 +181,6 @@ const changePassword = (userData, password) => __awaiter(void 0, void 0, void 0,
         where: { email: userData.userEmail },
         data: { password: hashedPassword },
     });
-    console.log(result);
     return result;
 });
 const userInfo = (userEmail) => __awaiter(void 0, void 0, void 0, function* () {

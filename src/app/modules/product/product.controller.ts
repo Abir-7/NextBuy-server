@@ -92,7 +92,7 @@ const flashProduct = catchAsync(async (req, res) => {
 const searchProduct = catchAsync(async (req, res) => {
   const filter = req.query.searchTerm || "";
   const result = await ProductService.searchProduct(filter as string);
-  console.log(req.query);
+
   sendResponse(res, {
     success: true,
     statusCode: 200,

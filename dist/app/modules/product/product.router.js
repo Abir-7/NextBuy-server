@@ -8,6 +8,7 @@ const router = (0, express_1.Router)();
 router.post("/add-product", (0, auth_1.auth)("VENDOR"), product_controller_1.ProductController.addProduct);
 router.post("/clone-product", (0, auth_1.auth)("VENDOR"), product_controller_1.ProductController.cloneProduct);
 router.get("/", product_controller_1.ProductController.allProduct);
+router.get("/search", product_controller_1.ProductController.searchProduct);
 router.post("/flash-sale", product_controller_1.ProductController.flashProduct);
 router.get("/:id", product_controller_1.ProductController.singleProduct);
 router.patch("/:id", (0, auth_1.auth)("VENDOR"), product_controller_1.ProductController.updateProduct);
