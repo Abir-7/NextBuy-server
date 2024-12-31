@@ -7,6 +7,7 @@ const router = Router();
 router.post("/add-product", auth("VENDOR"), ProductController.addProduct);
 router.post("/clone-product", auth("VENDOR"), ProductController.cloneProduct);
 router.get("/", ProductController.allProduct);
+router.get("/search", ProductController.searchProduct);
 router.post("/flash-sale", ProductController.flashProduct);
 router.get("/:id", ProductController.singleProduct);
 

@@ -197,8 +197,32 @@ const changePassword = async (
     where: { email: userData.userEmail },
     data: { password: hashedPassword },
   });
-  console.log(result);
+
   return result;
+};
+
+const userInfo = async (userEmail: string) => {
+  let userInfo = null;
+  const user = await prisma.user.findUnique({ where: { email: userEmail } });
+  if (!user) {
+    return userInfo;
+  }
+  if (user.role == "CUSTOMER") {
+    const cstomer = await prisma.customer.findUnique({
+      where: { email: user.email },
+      include: { user: { select: { role: true } } },
+    });
+    userInfo = cstomer;
+  }
+  if (user.role == "VENDOR") {
+    const vendor = await prisma.vendor.findUnique({
+      where: { email: user.email },
+      include: { user: { select: { role: true } } },
+    });
+    userInfo = vendor;
+  }
+
+  return userInfo;
 };
 
 export const UserService = {
@@ -208,4 +232,5 @@ export const UserService = {
   userBlock,
   userDelete,
   changePassword,
+  userInfo,
 };

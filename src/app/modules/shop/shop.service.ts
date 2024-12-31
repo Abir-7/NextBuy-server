@@ -48,7 +48,7 @@ const getAllVendorShop = async (
 
   const result = await prisma.shop.findMany({
     where: whereConditons,
-    include: { vendor: true, followers: true },
+    include: { vendor: true, followers: true, products: true },
     skip: skip,
     take: limit,
     orderBy: paginationData?.sort

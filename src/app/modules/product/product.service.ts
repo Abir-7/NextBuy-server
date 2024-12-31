@@ -104,8 +104,6 @@ const allProduct = async (
   });
   const whereConditons: Prisma.ProductWhereInput = { AND: andCondtion };
 
-  console.log(andCondtion, paginationData);
-
   const result = await prisma.product.findMany({
     where: whereConditons,
     include: {
@@ -270,6 +268,35 @@ const flashProduct = async () => {
     return result;
   }
 };
+const searchProduct = async (text: string) => {
+  // Check if text is empty or contains only whitespace
+  if (!text.trim()) {
+    console.log("Search text is empty.");
+    return []; // Return an empty array
+  }
+
+  console.log(text, "ds");
+  const product = await prisma.product.findMany({
+    where: {
+      OR: [
+        {
+          name: {
+            contains: text,
+            mode: "insensitive",
+          },
+        },
+        {
+          description: {
+            contains: text,
+            mode: "insensitive",
+          },
+        },
+      ],
+    },
+  });
+  console.log(product);
+  return product;
+};
 
 export const ProductService = {
   addProduct,
@@ -279,4 +306,5 @@ export const ProductService = {
   singleProduct,
   flashProduct,
   cloneProduct,
+  searchProduct,
 };

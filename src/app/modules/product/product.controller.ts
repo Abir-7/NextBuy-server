@@ -27,7 +27,6 @@ const cloneProduct = catchAsync(async (req, res) => {
 });
 
 const allProduct = catchAsync(async (req, res) => {
-  console.log("object");
   const paginationData = pickField(req.query, ["page", "limit", "sort"]);
 
   const filter = pickField(req.query, ["searchTerm", "categoryId"]);
@@ -90,8 +89,21 @@ const flashProduct = catchAsync(async (req, res) => {
   });
 });
 
+const searchProduct = catchAsync(async (req, res) => {
+  const filter = req.query.searchTerm || "";
+  const result = await ProductService.searchProduct(filter as string);
+  console.log(req.query);
+  sendResponse(res, {
+    success: true,
+    statusCode: 200,
+    message: "Search Product are fetched Successfully",
+    data: result,
+  });
+});
+
 export const ProductController = {
   addProduct,
+  searchProduct,
   updateProduct,
   deleteProduct,
   allProduct,

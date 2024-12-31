@@ -44,7 +44,7 @@ const getAllVendorShop = (paginationData, params) => __awaiter(void 0, void 0, v
     const whereConditons = { AND: andCondtion };
     const result = yield prisma_1.default.shop.findMany({
         where: whereConditons,
-        include: { vendor: true, followers: true },
+        include: { vendor: true, followers: true, products: true },
         skip: skip,
         take: limit,
         orderBy: (paginationData === null || paginationData === void 0 ? void 0 : paginationData.sort)

@@ -184,6 +184,28 @@ const changePassword = (userData, password) => __awaiter(void 0, void 0, void 0,
     console.log(result);
     return result;
 });
+const userInfo = (userEmail) => __awaiter(void 0, void 0, void 0, function* () {
+    let userInfo = null;
+    const user = yield prisma_1.default.user.findUnique({ where: { email: userEmail } });
+    if (!user) {
+        return userInfo;
+    }
+    if (user.role == "CUSTOMER") {
+        const cstomer = yield prisma_1.default.customer.findUnique({
+            where: { email: user.email },
+            include: { user: { select: { role: true } } },
+        });
+        userInfo = cstomer;
+    }
+    if (user.role == "VENDOR") {
+        const vendor = yield prisma_1.default.vendor.findUnique({
+            where: { email: user.email },
+            include: { user: { select: { role: true } } },
+        });
+        userInfo = vendor;
+    }
+    return userInfo;
+});
 exports.UserService = {
     createUser,
     setUserNewPassword,
@@ -191,4 +213,5 @@ exports.UserService = {
     userBlock,
     userDelete,
     changePassword,
+    userInfo,
 };

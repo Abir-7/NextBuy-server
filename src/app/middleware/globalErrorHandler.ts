@@ -47,7 +47,7 @@ const errorHandler = (
       errorDetails = { stack: err.stack };
     }
   }
-
+  console.log(err);
   // Send response in desired structure
   res.status(statusCode).json({
     success: false,

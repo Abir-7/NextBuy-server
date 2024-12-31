@@ -77,6 +77,16 @@ const changePassword = (0, tryCatch_1.default)((req, res) => __awaiter(void 0, v
         message: "Password Updated Successfully",
     });
 }));
+const userInfo = (0, tryCatch_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const userData = req.user;
+    const result = yield user_service_1.UserService.userInfo(userData.userEmail);
+    (0, sendResponse_1.default)(res, {
+        data: result,
+        statusCode: 200,
+        success: true,
+        message: "image fetched Successfully",
+    });
+}));
 exports.UserController = {
     createUser,
     getAllUser,
@@ -84,4 +94,5 @@ exports.UserController = {
     deleteUser,
     setNewPassword,
     changePassword,
+    userInfo,
 };

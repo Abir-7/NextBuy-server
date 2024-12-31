@@ -75,6 +75,17 @@ const changePassword = catchAsync(async (req, res) => {
   });
 });
 
+const userInfo = catchAsync(async (req, res) => {
+  const userData = req.user as JwtPayload & { userEmail: string; role: string };
+  const result = await UserService.userInfo(userData.userEmail);
+
+  sendResponse(res, {
+    data: result,
+    statusCode: 200,
+    success: true,
+    message: "image fetched Successfully",
+  });
+});
 export const UserController = {
   createUser,
   getAllUser,
@@ -82,4 +93,5 @@ export const UserController = {
   deleteUser,
   setNewPassword,
   changePassword,
+  userInfo,
 };
